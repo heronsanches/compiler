@@ -25,7 +25,7 @@ typedef enum{
 	CONSTANT_CHARACTER, CONSTANT_STRING
 }TokenType;
 
-//used to save the tokens after validation them
+//it is used to save a token after its validation
 typedef struct{
 	TokenType type;
 	union{
@@ -34,6 +34,17 @@ typedef struct{
 	}attribute;
 
 }Token;
+
+//it saves tokens already verified (if it belongs to language)
+Token *tokens;
+
+#define INITIAL_TOKEN_BUFFER 20
+
+
+//********function's prototype********
+void initializeTokens(); //TODO verify
+void lAnalyser(const char *fileName); //TODO verify
+
 
 
 #endif /* LEXICAL_H_ */
