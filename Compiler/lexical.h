@@ -6,13 +6,17 @@
  *
  *  ID: [a-zA-Z]([a-zA-Z]|[0-9])*
  *  CONSTANT_NUMBER: [0-9]+     MÁXIMO DE 10 REPETIÇÕESS
- *  CONSTANT_CHARACTER:
- *  CONSTANT_STRING:            MÁXIMO 256 CHARACTERES
+ *  CONSTANT_CHARACTER: ''
+ *  CONSTANT_STRING:   ""         MÁXIMO 256 CHARACTERES
  *
  */
 
 #ifndef LEXICAL_H_
 #define LEXICAL_H_
+
+#define INITIAL_TOKEN_BUFFER 20
+#define TRUE 1;
+#define FALSE 0;
 
 
 typedef enum{
@@ -26,24 +30,35 @@ typedef enum{
 }TokenType;
 
 //it is used to save a token after its validation
-typedef struct{
+typedef struct Token{
 	TokenType type;
+	struct Token *next;
 	union{
-		char* name;
+		char *name;
 		unsigned long long num;
 	}attribute;
 
 }Token;
 
-//it saves tokens already verified (if it belongs to language)
+//it is used to save tokens yet not validated
+typedef struct PreToken{
+	char *name;
+	struct PreToken *next;
+}PreToken;
+
 Token *tokens;
+Token *actualToken;
 
-#define INITIAL_TOKEN_BUFFER 20
-
+PreToken *preTokens;
+PreToken *actualPreToken;
 
 //********function's prototype********
-void initializeTokens(); //TODO verify
-void lAnalyser(const char *fileName); //TODO verify
+void initTokens(); //initialize "tokens" and "actualToken"
+void initPreTokens(); //initialize "preTokens" and "actualPretoken"
+_Bool insPreToken(char *name);
+_Bool isLetter(int letter);
+_Bool isDigit(int character);
+void preLAnalyser(const char *fileName); //TODO verify
 
 
 
