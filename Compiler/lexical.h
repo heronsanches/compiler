@@ -62,7 +62,10 @@ _Bool isLetter(int letter);
 _Bool isDigit(int character);
 void preLAnalyzer(const char *fileName); //TODO verify
 _Bool lAnalyzer(const char *fileName);
+
+//finite automatons
 _Bool isID(PreToken *preToken);
+_Bool isConstantNumber(PreToken *preToken);
 
 
 

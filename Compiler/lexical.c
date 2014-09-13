@@ -192,7 +192,7 @@ _Bool lAnalyzer(const char *fileName){
 	//traverses the list "preTokens" for match elements the language
 	for(; actualPreToken != NULL; actualPreToken = actualPreToken->next){
 
-		if( isID(actualPreToken) ) // TODO or, is the others finite machines
+		if( isID(actualPreToken) || isConstantNumber(actualPreToken)) // TODO or, is the others finite machines
 			;
 		else{
 			printf("ERR \"Token nao reconhecido.\"\n<< token: %s\n", actualPreToken->name);
@@ -242,10 +242,55 @@ _Bool isID(PreToken *preToken){
 
 	}
 
-	if(state == '2'){ //accept case
+	if(state == '2'){ //final state
 
 		insToken(ID, preToken);
 		return TRUE;
+	}
+
+	return FALSE;
+
+}
+
+
+_Bool isConstantNumber(PreToken *preToken){
+
+	char state = '1';
+	int i = 0;
+
+	while( (state == '1' || state == '2') & preToken->name[i] != '\0'){
+
+		switch(state){
+
+			case '1':
+
+				if(isDigit((int)preToken->name[i])){
+
+					i++;
+					state = '2';
+
+				}else
+					state = '0';
+
+			break;
+
+			case '2':
+
+				if(isDigit((int)preToken->name[i]) && i < 10) //the CONSTANT_NUMBER has a limit of 10
+					i++;
+				else
+					state = '0';
+
+			break;
+		}
+
+	}
+
+	if(state == '2'){ //final state
+
+		insToken(CONSTANT_NUMBER, preToken);
+		return TRUE;
+
 	}
 
 	return FALSE;
