@@ -176,13 +176,6 @@ void preLAnalyzer(const char *fileName){
 
 		}
 
-		//TODO remove this after tests' phases
-		/*PreToken *pta = preTokens;
-		for(; pta != NULL; pta = pta->next)
-			printf("%s\n", pta->name);*/
-
-		//TODO make free in "preTokens" after analyzer these tokens, I think no??? references...
-		//free(preTokens);
 		fclose(sf);
 
 	}else{
