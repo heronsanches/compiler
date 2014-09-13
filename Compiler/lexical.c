@@ -26,7 +26,7 @@ void initPreTokens(){
 }
 
 
-_Bool insToken(TokenType tokenType, PreToken *preToken){
+_Bool insToken(TokenType tokenType, char *tokenName){
 
 	Token *t;
 
@@ -38,9 +38,9 @@ _Bool insToken(TokenType tokenType, PreToken *preToken){
 			tokens->type = tokenType;
 
 			if(tokenType != CONSTANT_NUMBER && tokenType != NUMBER)
-				tokens->attribute.name = preToken->name;
+				tokens->attribute.name = tokenName;
 			else
-				tokens->attribute.num = preToken->name; //TODO string to long long
+				tokens->attribute.num = tokenName; //TODO string to long long
 
 			tokens->next = NULL;
 			actualToken = tokens;
@@ -55,9 +55,9 @@ _Bool insToken(TokenType tokenType, PreToken *preToken){
 			actualToken->type = tokenType;
 
 			if(tokenType != CONSTANT_NUMBER && tokenType != NUMBER)
-				actualToken->attribute.name = preToken->name;
+				actualToken->attribute.name = tokenName;
 			else
-				actualToken->attribute.num = preToken->name; //TODO string to long long
+				actualToken->attribute.num = tokenName; //TODO string to long long
 
 			actualToken->next = NULL;
 
@@ -128,6 +128,15 @@ _Bool isDigit(int character){
 }
 
 
+_Bool isPrintableCharacter(int character){
+
+	if(character >= 32 && character <= 126)
+		return TRUE;
+
+	return FALSE;
+}
+
+
 //TODO test phase
 void preLAnalyzer(const char *fileName){
 
@@ -192,7 +201,8 @@ _Bool lAnalyzer(const char *fileName){
 	//traverses the list "preTokens" for match elements the language
 	for(; actualPreToken != NULL; actualPreToken = actualPreToken->next){
 
-		if( isID(actualPreToken) || isConstantNumber(actualPreToken)) // TODO or, is the others finite machines
+		if( isID(actualPreToken->name) || isConstantNumber(actualPreToken->name)
+				|| isConstantCharacter(actualPreToken->name)) // TODO or, is the others finite machines
 			;
 		else{
 			printf("ERR \"Token nao reconhecido.\"\n<< token: %s\n", actualPreToken->name);
@@ -206,18 +216,109 @@ _Bool lAnalyzer(const char *fileName){
 }
 
 
-_Bool isID(PreToken *preToken){
+_Bool isConstantCharacter(char *tokenName){
 
-	char state = '1'; //beginning
+	char state = '1';
 	int i = 0;
 
-	while( (state == '1' || state == '2') && preToken->name[i] != '\0'){
+	while( (state == '1' || state == '2' || state == '3'
+			|| state == '4'|| state == '5') && tokenName[i] != '\0' ){
 
 		switch(state){
 
 			case '1':
 
-				if(isLetter((int)preToken->name[i])){
+				if(tokenName[i] == (char)39){ //is it a single quotation?
+
+					i++;
+					state = '2';
+
+				}else
+					state = '0';
+
+			break;
+
+			case '2':
+
+				if( tokenName[i] != (char)92 &&  tokenName[i] != (char)39 &&
+						tokenName[i] != (char)34 && isPrintableCharacter((int)tokenName[i]) ){
+
+					state = '3';
+					i++;
+
+				}else if(tokenName[i] == (char)92){ //is it a invert bar?
+
+					state = '4';
+					i++;
+				}else
+					state ='0';
+
+			break;
+
+			case '3':
+
+				if(tokenName[i] == (char)39){
+
+					state = '6';
+					i++;
+
+				}else
+					state = '0';
+
+			break;
+
+			case '4':
+
+				if(tokenName[i] == (char)116 || tokenName[i] == (char)110 || tokenName[i] == (char)92
+						|| tokenName[i] == (char)39 || tokenName[i] == (char)34){ // t n \ ' "
+
+					state = '5';
+					i++;
+
+				}else
+					state = '0';
+
+			break;
+
+			case '5':
+
+				if(tokenName[i] == (char)39){
+
+					state = '6';
+					i++;
+
+				}else
+					state = '0';
+
+			break;
+
+		}
+
+	}
+
+	if(state == '6'){
+
+		insToken(CONSTANT_CHARACTER, tokenName);
+		return TRUE;
+
+	}
+
+	return FALSE;
+}
+
+
+_Bool isID(char *tokenName){
+
+	char state = '1'; //beginning
+	int i = 0;
+
+	while( (state == '1' || state == '2') && tokenName[i] != '\0'){
+
+		switch(state){
+
+			case '1':
+
+				if(isLetter((int)tokenName[i])){
 
 					i++;
 					state = '2';
@@ -230,7 +331,7 @@ _Bool isID(PreToken *preToken){
 
 			case '2':
 
-				if(isLetter((int)preToken->name[i]) || isdigit((int)preToken->name[i])){
+				if(isLetter((int)tokenName[i]) || isdigit((int)tokenName[i])){
 					i++;
 				}else{
 					state = '0';
@@ -244,7 +345,7 @@ _Bool isID(PreToken *preToken){
 
 	if(state == '2'){ //final state
 
-		insToken(ID, preToken);
+		insToken(ID, tokenName);
 		return TRUE;
 	}
 
@@ -253,18 +354,18 @@ _Bool isID(PreToken *preToken){
 }
 
 
-_Bool isConstantNumber(PreToken *preToken){
+_Bool isConstantNumber(char *tokenName){
 
 	char state = '1';
 	int i = 0;
 
-	while( (state == '1' || state == '2') & preToken->name[i] != '\0'){
+	while( (state == '1' || state == '2') && tokenName[i] != '\0'){
 
 		switch(state){
 
 			case '1':
 
-				if(isDigit((int)preToken->name[i])){
+				if(isDigit((int)tokenName[i])){
 
 					i++;
 					state = '2';
@@ -276,7 +377,7 @@ _Bool isConstantNumber(PreToken *preToken){
 
 			case '2':
 
-				if(isDigit((int)preToken->name[i]) && i < 10) //the CONSTANT_NUMBER has a limit of 10
+				if(isDigit((int)tokenName[i]) && i < 10) //the CONSTANT_NUMBER has a limit of 10
 					i++;
 				else
 					state = '0';
@@ -288,7 +389,7 @@ _Bool isConstantNumber(PreToken *preToken){
 
 	if(state == '2'){ //final state
 
-		insToken(CONSTANT_NUMBER, preToken);
+		insToken(CONSTANT_NUMBER, tokenName);
 		return TRUE;
 
 	}

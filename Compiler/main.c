@@ -19,6 +19,7 @@ int main(int argc, char *argv[]){
 
 	}
 
+	//TODO verifying how the operational system empty memory after exit program or before
 	return 0;
 }
 

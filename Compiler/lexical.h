@@ -57,15 +57,19 @@ PreToken *actualPreToken;
 void initTokens(); //initialize "tokens" and "actualToken"
 void initPreTokens(); //initialize "preTokens" and "actualPretoken"
 _Bool insPreToken(char *name);
-_Bool insToken(TokenType tokenType, PreToken *preToken);
+_Bool insToken(TokenType tokenType, char *tokenName);
+
 _Bool isLetter(int letter);
 _Bool isDigit(int character);
+_Bool isPrintableCharacter(int character);
+
 void preLAnalyzer(const char *fileName); //TODO verify
 _Bool lAnalyzer(const char *fileName);
 
 //finite automatons
-_Bool isID(PreToken *preToken);
-_Bool isConstantNumber(PreToken *preToken);
+_Bool isID(char *tokenName);
+_Bool isConstantNumber(char *tokenName);
+_Bool isConstantCharacter(char *tokenName);
 
 
 
