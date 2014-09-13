@@ -52,13 +52,17 @@ Token *actualToken;
 PreToken *preTokens;
 PreToken *actualPreToken;
 
+
 //********function's prototype********
 void initTokens(); //initialize "tokens" and "actualToken"
 void initPreTokens(); //initialize "preTokens" and "actualPretoken"
 _Bool insPreToken(char *name);
+_Bool insToken(TokenType tokenType, PreToken *preToken);
 _Bool isLetter(int letter);
 _Bool isDigit(int character);
-void preLAnalyser(const char *fileName); //TODO verify
+void preLAnalyzer(const char *fileName); //TODO verify
+_Bool lAnalyzer(const char *fileName);
+_Bool isID(PreToken *preToken);
 
 
 

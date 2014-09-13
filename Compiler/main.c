@@ -15,7 +15,7 @@ int main(int argc, char *argv[]){
 				"<< Deve-se usar: nomedoPrograma nomeArquivoCodigofonte\n");
 	}else{
 
-		preLAnalyser(argv[1]);
+		lAnalyzer(argv[1]);
 
 	}
 
