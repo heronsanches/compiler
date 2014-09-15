@@ -73,7 +73,7 @@ _Bool insToken(TokenType tokenType, char *tokenName){
 }
 
 
-_Bool insPreToken(char *name){
+_Bool insPreToken(char *name, int line){
 
 	PreToken *pt;
 
@@ -83,6 +83,7 @@ _Bool insPreToken(char *name){
 
 			preTokens = pt;
 			preTokens->name = name;
+			preTokens->line = line;
 			preTokens->next = NULL;
 
 			actualPreToken = preTokens;
@@ -95,6 +96,7 @@ _Bool insPreToken(char *name){
 
 			actualPreToken = pt;
 			actualPreToken->name = name;
+			actualPreToken->line = line;
 			actualPreToken->next = NULL;
 
 			return TRUE;
@@ -148,6 +150,7 @@ void preLAnalyzer(const char *fileName){
 
 		int c; //value of character in it
 		int qc = 0; //quantity of characters read
+		int al = 1; //actual line
 		char *tokenReaded = (char*)malloc(INITIAL_TOKEN_BUFFER);
 
 		//reading source file
@@ -162,10 +165,13 @@ void preLAnalyzer(const char *fileName){
 			if(c == 32 || c == 9 || c == 10){ //space, tab, line feed
 
 				tokenReaded[qc] = '\0';
-				insPreToken(tokenReaded);
+				insPreToken(tokenReaded, al);
 
 				tokenReaded = (char*)malloc(INITIAL_TOKEN_BUFFER);
 				qc = 0;
+
+				if(c == 10)
+					al++;
 
 			}else{
 
@@ -179,8 +185,8 @@ void preLAnalyzer(const char *fileName){
 		fclose(sf);
 
 	}else{
-		printf("%s", "ERR \"Possivelmente este arquivo nao existe.\"\n"
-				"<< Verifique o nome do arquivo\n");
+		printf("ERR \"Possivelmente o arquivo --%s-- nao existe.\"\n"
+				"<< Verifique o nome do arquivo\n", fileName);
 	}
 
 }
@@ -194,11 +200,15 @@ _Bool lAnalyzer(const char *fileName){
 	//traverses the list "preTokens" for match elements the language
 	for(; actualPreToken != NULL; actualPreToken = actualPreToken->next){
 
-		if( isID(actualPreToken->name) || isConstantNumber(actualPreToken->name)
-				|| isConstantCharacter(actualPreToken->name)) // TODO or, is the others finite machines
+		//TODO igonre the others, tab and \n
+		//*actualPreToken->name == '\0'; it ignores blank spaces
+		if( *actualPreToken->name == '\0' || isID(actualPreToken->name) || isConstantNumber(actualPreToken->name)
+				|| isConstantCharacter(actualPreToken->name) ) // TODO or, is the others finite machines
 			;
 		else{
-			printf("ERR \"Token nao reconhecido.\"\n<< token: %s\n", actualPreToken->name);
+			printf("ERR \"Token nao reconhecido em -- %s --\"\n<<linha: %d   token: %s\n", fileName,
+					actualPreToken->line, actualPreToken->name);
+
 			return FALSE;
 		}
 

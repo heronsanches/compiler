@@ -43,6 +43,7 @@ typedef struct Token{
 //it is used to save tokens yet not validated
 typedef struct PreToken{
 	char *name;
+	int line;
 	struct PreToken *next;
 }PreToken;
 
@@ -56,7 +57,7 @@ PreToken *actualPreToken;
 //********function's prototype********
 void initTokens(); //initialize "tokens" and "actualToken"
 void initPreTokens(); //initialize "preTokens" and "actualPretoken"
-_Bool insPreToken(char *name);
+_Bool insPreToken(char *name, int line);
 _Bool insToken(TokenType tokenType, char *tokenName);
 
 _Bool isLetter(int letter);
