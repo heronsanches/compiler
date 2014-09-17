@@ -139,6 +139,25 @@ _Bool isPrintableCharacter(int character){
 }
 
 
+_Bool isSeparatorCharacter(int character){
+
+	_Bool is = FALSE;
+
+	for(int i=0; i<17; i++){
+
+		if(character == separatorsCharacter[i]){
+
+			is = TRUE;
+			break;
+
+		}
+
+	}
+
+	return is;
+
+}
+
 //TODO test phase
 void preLAnalyzer(const char *fileName){
 
@@ -154,6 +173,9 @@ void preLAnalyzer(const char *fileName){
 		char *tokenReaded = (char*)malloc(INITIAL_TOKEN_BUFFER);
 
 		//reading source file
+		_Bool exceptionCharacter = FALSE;
+		_Bool exceptionString = FALSE;
+
 		while( (c = fgetc(sf)) != EOF ){
 
 			//increase memory allocated for "tokenReaded"
@@ -161,11 +183,47 @@ void preLAnalyzer(const char *fileName){
 				tokenReaded = (char*)realloc(tokenReaded, qc + 2); //+2: one char for save the "last separator(it has conditions)" and other to save '\0'
 			}
 
-			//is a separator? //TODO I must save the others separators besides them
-			if(c == 32 || c == 9 || c == 10){ //space, tab, line feed
+			if(exceptionCharacter && c == 39){
 
 				tokenReaded[qc] = '\0';
 				insPreToken(tokenReaded, al);
+
+				tokenReaded = (char*)malloc(INITIAL_TOKEN_BUFFER);
+
+				//TODO discard or salve the separator???
+				qc = 0;
+				exceptionCharacter = FALSE;
+				continue;
+
+			}
+
+			//TODO the same above for constantString
+
+			tokenReaded[qc] = (char)c;
+			tokenReaded[qc+1] = '\0';
+
+			if( (exceptionCharacter = isConstantCharacter(tokenReaded)) ||
+					(exceptionString = isConstantString(tokenReaded))){ //TODO falta "|| isConstantString()"
+
+				qc++;
+				continue;
+
+			}
+
+			if(isSeparatorCharacter(c)){ //TODO create flags isSeparator besides space, perere...
+
+				tokenReaded[qc] = '\0';
+				insPreToken(tokenReaded, al);
+
+				//TODO verifying tokens to salve
+				//if(separatorOtherBesidesEspaceTab... and besides exception) save it how a token
+				//TODO treat exceptions <> <= >= for save these separators
+				//TODO if(exceptions)
+						//flag = true;
+						//la em cima verifica se o flag e true e se eh seguido do outro character da mesma
+						//forma que fez com as constantes
+						//caso seja o salva a excessao
+
 
 				tokenReaded = (char*)malloc(INITIAL_TOKEN_BUFFER);
 				qc = 0;
@@ -175,7 +233,6 @@ void preLAnalyzer(const char *fileName){
 
 			}else{
 
-				tokenReaded[qc] = (char)c;
 				qc++;
 
 			}

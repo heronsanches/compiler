@@ -53,6 +53,8 @@ Token *actualToken;
 PreToken *preTokens;
 PreToken *actualPreToken;
 
+const int separatorsCharacter[] = {32, 10, 9, 44, 46, 91, 93, 43, 45, 42, 47, 37, 40, 41, 61, 60, 62}; //size = 17
+
 
 //********function's prototype********
 void initTokens(); //initialize "tokens" and "actualToken"
@@ -63,6 +65,7 @@ _Bool insToken(TokenType tokenType, char *tokenName);
 _Bool isLetter(int letter);
 _Bool isDigit(int character);
 _Bool isPrintableCharacter(int character);
+_Bool isSeparatorCharacter(int character);
 
 void preLAnalyzer(const char *fileName); //TODO verify
 _Bool lAnalyzer(const char *fileName);
@@ -71,6 +74,7 @@ _Bool lAnalyzer(const char *fileName);
 _Bool isID(char *tokenName);
 _Bool isConstantNumber(char *tokenName);
 _Bool isConstantCharacter(char *tokenName);
+_Bool isConstantString(char *tokenReaded); //TODO
 
 
 
