@@ -18,7 +18,6 @@
 #define TRUE 1
 #define FALSE 0
 #define QTDE_RESERVED_WORDS 17
-#define QTDE_SEPARATORS //exclusive for dfa
 
 
 typedef enum{
@@ -33,8 +32,8 @@ typedef enum{
 
 //SN = State Null
 typedef enum{
-	S1, S2, S3, S4, S5, S5, S6, S7, S8, S9, S10, S11, S12, S13, S14, S15, S16, S17,
-	S18, S19, S20, S21, S22, S23, S24, S25, S26, SN
+	S1, S2, S3, S4, S5, S6, S7, S8, S9, S10, S11, S12, S13, S14, S15, S16, S17,
+	S18, S19, S20, S21, S22, S23, S24, S25, S26
 }States;
 
 //it is used to save a token after its validation
@@ -60,8 +59,6 @@ Token *actualToken;
 
 PreToken *preTokens;
 PreToken *actualPreToken;
-
-const int separatorsCharacter[] = {32, 10, 9, 44, 46, 91, 93, 43, 45, 42, 47, 37, 40, 41, 61}; //size = 15
 
 
 //********function's prototype********

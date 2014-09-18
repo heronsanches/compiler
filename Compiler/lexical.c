@@ -18,6 +18,10 @@ struct{
 	   {"do", DO}, {"for", FOR}, {"from", FROM}, {"to", TO}, {"resize", RESIZE}, {"read", READ},
 	   {"print", PRINT} };
 
+const int separatorsCharacter[] = {32, 10, 9, 44, 46, 91, 93, 43, 45, 42, 47, 37, 40, 41, 61}; //size = 15
+const int QTDE_SEPARATORS = 15; //exclusive for dfa
+
+
 //TODO struct RelationalOperators
 //TODO struct RelationalOperators
 
@@ -118,7 +122,9 @@ _Bool isSeparatorCharacter(int character){
 
 	_Bool is = FALSE;
 
-	for(int i=0; i<QTDE_SEPARATORS; i++){
+	int i;
+
+	for(i=0; i<QTDE_SEPARATORS; i++){
 
 		if(character == separatorsCharacter[i]){
 
@@ -158,11 +164,13 @@ void lAnalyzer(const char *fileName){
 		char *tokenReaded = (char*)malloc(INITIAL_TOKEN_BUFFER);
 
 		States s = S1;
-		_Bool outWhileDFA = FALSE;
+		_Bool outWhileDFA = FALSE; //read another character
 		_Bool outWhileRead = FALSE;
 
 		//Read
-		while( (c = fgetc(sf)) != EOF ){
+		while( !outWhileRead && (c = fgetc(sf)) != EOF ){
+
+			outWhileDFA = FALSE;
 
 			//increase memory allocated for "tokenReaded"
 			if(qc > INITIAL_TOKEN_BUFFER-1){
@@ -170,17 +178,17 @@ void lAnalyzer(const char *fileName){
 			}
 
 			//TODO DFA
-			while( s == S1 || s == S2 || s == S3 || s == S4 || s == S5 || s == S6 ||
+			while( !outWhileDFA && (s == S1 || s == S2 || s == S3 || s == S4 || s == S5 || s == S6 ||
 					s == S7 || s == S8 || s == S9 || s == S10 || s == S11 || s == S12 ||
 					s == S13 || s == S14 || s == S15 || s == S16 || s == S17 || s == S18 ||
 					s == S19 || s == S20 || s == S21 || s == S22 || s == S23 || s == S24 ||
-					s == S25 || s == S26 ){
+					s == S25 || s == S26) ){
 
 				tokenReaded[qc] = (char)c;
 
 				switch(s){
 
-					case s == S1:
+					case S1:
 
 						if(isLetter(c)){
 
@@ -218,17 +226,18 @@ void lAnalyzer(const char *fileName){
 						}else{
 
 							tokenReaded[qc+1] = '\0';
-							printf("%s", "ERR \"nao pertence a linguagem\"\n"
-									"<< Deve-se usar: nomedoPrograma nomeArquivoCodigofonte\n");
-							s = SN;
+
+							printf("ERR \"nao pertence a linguagem\"\n"
+									"<< linha: %d   %s\n", al, tokenReaded);
+
+							outWhileRead = TRUE;
+							outWhileDFA = TRUE;
 						}
 
 					break;
 				}
 
 			}
-
-
 
 
 		}
