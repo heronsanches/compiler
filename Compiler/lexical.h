@@ -15,8 +15,10 @@
 #define LEXICAL_H_
 
 #define INITIAL_TOKEN_BUFFER 20
-#define TRUE 1;
-#define FALSE 0;
+#define TRUE 1
+#define FALSE 0
+#define QTDE_RESERVED_WORDS 17
+#define QTDE_SEPARATORS //exclusive for dfa
 
 
 typedef enum{
@@ -29,13 +31,19 @@ typedef enum{
 	CONSTANT_CHARACTER, CONSTANT_STRING
 }TokenType;
 
+//SN = State Null
+typedef enum{
+	S1, S2, S3, S4, S5, S5, S6, S7, S8, S9, S10, S11, S12, S13, S14, S15, S16, S17,
+	S18, S19, S20, S21, S22, S23, S24, S25, S26, SN
+}States;
+
 //it is used to save a token after its validation
 typedef struct Token{
 	TokenType type;
 	struct Token *next;
 	union{
 		char *name;
-		unsigned long long num;
+		unsigned long long num; //TODO see more about .. at least 64bit
 	}attribute;
 
 }Token;
@@ -53,7 +61,7 @@ Token *actualToken;
 PreToken *preTokens;
 PreToken *actualPreToken;
 
-const int separatorsCharacter[] = {32, 10, 9, 44, 46, 91, 93, 43, 45, 42, 47, 37, 40, 41, 61, 60, 62}; //size = 17
+const int separatorsCharacter[] = {32, 10, 9, 44, 46, 91, 93, 43, 45, 42, 47, 37, 40, 41, 61}; //size = 15
 
 
 //********function's prototype********
@@ -63,18 +71,16 @@ _Bool insPreToken(char *name, int line);
 _Bool insToken(TokenType tokenType, char *tokenName);
 
 _Bool isLetter(int letter);
-_Bool isDigit(int character);
+_Bool isNumberDigit(int character);
 _Bool isPrintableCharacter(int character);
 _Bool isSeparatorCharacter(int character);
 
-void preLAnalyzer(const char *fileName); //TODO verify
-_Bool lAnalyzer(const char *fileName);
+int toLowercase(int c);
 
-//finite automatons
-_Bool isID(char *tokenName);
-_Bool isConstantNumber(char *tokenName);
-_Bool isConstantCharacter(char *tokenName);
-_Bool isConstantString(char *tokenReaded); //TODO
+void lAnalyzer(const char *fileName); //TODO unique DFA
+//_Bool lAnalyzer(const char *fileName);
+
+
 
 
 
