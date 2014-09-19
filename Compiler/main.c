@@ -17,6 +17,8 @@ int main(int argc, char *argv[]){
 
 		lAnalyzer(argv[1]);
 
+		//TODO to make a function to free all memory allocated by program
+
 	}
 
 	//TODO verifying how the operational system empty memory after exit program or before

@@ -171,7 +171,7 @@ void lAnalyzer(const char *fileName){
 		_Bool outWhileRead = FALSE; //exit read of the characters
 
 		//Read
-		while( !outWhileRead && (c = fgetc(sf)) != EOF ){
+		while( !outWhileRead && (c = fgetc(sf)) != EOF ){ //TODO tentar tratar bfg' com do{]while();
 
 			if(c == 10)
 				al++;
@@ -185,9 +185,9 @@ void lAnalyzer(const char *fileName){
 
 			//TODO DFA
 			while( !outWhileDFA && (s == S1 || s == S2 || s == S3 || s == S4 || s == S5 || s == S6 ||
-					s == S7 || s == S8 || s == S9 || s == S10 || s == S11 || s == S12 || s == S13 ||
+					s == S7 || s == S8 || s == S9 || s == S10 || s == S11 || s == S12 ||
 					s == S14 || s == S15 || s == S17 || s == S18 || s == S19 || s == S20 ||
-					s == S21 || s == S22 || s == S23 || s == S24 ||	s == S25 || s == S26) ){
+					s == S21 || s == S22 || s == S23 || s == S24) ){
 
 				tokenReaded[qc] = (char)c;
 
@@ -431,7 +431,94 @@ void lAnalyzer(const char *fileName){
 
 					break;
 
-					//TODO the left
+					case S5:
+
+						if(isPrintableL(c)){
+
+							qc++;
+							outWhileDFA = TRUE;
+
+						}else if(c == 34){
+
+							s = S17;
+
+						}else if(c == 92){
+
+							s = S12;
+							qc++;
+							outWhileDFA = TRUE;
+
+						}
+
+					break;
+
+					case S17: //accepted CONSTANT_STRING
+
+						tokenReaded[qc+1] = '\0';
+						insToken(CONSTANT_STRING, tokenReaded);
+						s = S1;
+
+						tokenReaded = (char*)malloc(INITIAL_TOKEN_BUFFER);
+						qc = 0;
+						outWhileDFA = TRUE;
+
+					break;
+
+					case S12:
+
+						if(isSE(c)){
+
+							s = S5;
+							qc++;
+							outWhileDFA = TRUE;
+
+						}else{
+
+							tokenReaded[qc+1] = '\0';
+
+							printf("ERR \"nao pertence a linguagem\"\n"
+									"<< linha: %d   %s\n", al, tokenReaded);
+
+							outWhileRead = TRUE;
+							outWhileDFA = TRUE;
+						}
+
+					break;
+
+					case 23: //accepted relational operator <
+
+						if(c == 62 || c == 61)
+							s = S24;
+						else{
+
+							tokenReaded[qc] = '\0';
+							insToken(LESS, tokenReaded);
+							s = S1;
+
+							qc = 0;
+							tokenReaded = (char*)malloc(INITIAL_TOKEN_BUFFER);
+						}
+
+					break;
+
+					case 24: //accepted relational operator <> <=
+
+						tokenReaded[qc+1] = '\0';
+
+						if(c == 62)
+							insToken(DIFFERENT, tokenReaded);
+						else
+							insToken(LESS_OR_EQUAL, tokenReaded);
+
+						s = S1;
+
+						tokenReaded = (char*)malloc(INITIAL_TOKEN_BUFFER);
+						qc = 0;
+						outWhileDFA = TRUE;
+
+					break;
+
+
 
 
 
