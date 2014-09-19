@@ -28,16 +28,8 @@ const int QTDE_SEPARATORS = 15; //exclusive for dfa
 
 void initTokens(){
 
-	preTokens = NULL;
-	actualToken = NULL;
-
-}
-
-
-void initPreTokens(){
-
 	tokens = NULL;
-	actualPreToken = NULL;
+	actualToken = NULL;
 
 }
 
@@ -109,7 +101,7 @@ _Bool isNumberDigit(int character){
 }
 
 
-_Bool isPrintableCharacter(int character){
+_Bool isPrintableAll(int character){
 
 	if(character >= 32 && character <= 126)
 		return TRUE;
@@ -117,25 +109,37 @@ _Bool isPrintableCharacter(int character){
 	return FALSE;
 }
 
+_Bool isPrintableL(int character){
 
-_Bool isSeparatorCharacter(int character){
+	if( character != 92 && character != 39 && character != 34 && isPrintableAll(character))
+		return TRUE;
 
-	_Bool is = FALSE;
+	return FALSE;
+}
+
+
+_Bool isSeparatorL(int character){
 
 	int i;
 
 	for(i=0; i<QTDE_SEPARATORS; i++){
 
-		if(character == separatorsCharacter[i]){
-
-			is = TRUE;
-			break;
-
-		}
+		if(character == separatorsCharacter[i])
+			return TRUE;
 
 	}
 
-	return is;
+	return FALSE;
+}
+
+
+_Bool isSeparatorAll(int character){
+
+	if(isSeparatorL(character) || character == 60 || character == 62 || character == 39
+			|| character == 34)
+		return TRUE;
+
+	return FALSE;
 
 }
 
@@ -153,7 +157,6 @@ int toLowercase(int c){
 void lAnalyzer(const char *fileName){
 
 	FILE *sf; //source file
-	initPreTokens();
 	initTokens();
 
 	if( (sf = fopen(fileName, "r")) != NULL ){
@@ -165,10 +168,13 @@ void lAnalyzer(const char *fileName){
 
 		States s = S1;
 		_Bool outWhileDFA = FALSE; //read another character
-		_Bool outWhileRead = FALSE;
+		_Bool outWhileRead = FALSE; //exit read of the characters
 
 		//Read
 		while( !outWhileRead && (c = fgetc(sf)) != EOF ){
+
+			if(c == 10)
+				al++;
 
 			outWhileDFA = FALSE;
 
@@ -179,10 +185,9 @@ void lAnalyzer(const char *fileName){
 
 			//TODO DFA
 			while( !outWhileDFA && (s == S1 || s == S2 || s == S3 || s == S4 || s == S5 || s == S6 ||
-					s == S7 || s == S8 || s == S9 || s == S10 || s == S11 || s == S12 ||
-					s == S13 || s == S14 || s == S15 || s == S16 || s == S17 || s == S18 ||
-					s == S19 || s == S20 || s == S21 || s == S22 || s == S23 || s == S24 ||
-					s == S25 || s == S26) ){
+					s == S7 || s == S8 || s == S9 || s == S10 || s == S11 || s == S12 || s == S13 ||
+					s == S14 || s == S15 || s == S17 || s == S18 || s == S19 || s == S20 ||
+					s == S21 || s == S22 || s == S23 || s == S24 ||	s == S25 || s == S26) ){
 
 				tokenReaded[qc] = (char)c;
 
@@ -192,36 +197,45 @@ void lAnalyzer(const char *fileName){
 
 						if(isLetter(c)){
 
-							s = S2;
+							s = S2; //ID
+							outWhileDFA = TRUE;
 							qc++;
 
 						}else if(isNumberDigit(c)){
 
-							s = S3;
+							s = S3; //CONSTANT_NUMBER continuation
+							outWhileDFA = TRUE;
 							qc++;
 
-						}else if(c == 39){ //simple quote
+						}else if(c == 39){
 
-							s = S4;
+							s = S4; //CONSTANT_CHARACTER continuation
+							outWhileDFA = TRUE;
 							qc++;
 
-						}else if(c == 34){ //quotation marks
+						}else if(c == 34){
 
 							s = S5;
+							outWhileDFA = TRUE;
+							qc++; //CONSTANT_STRING continuation
+
+						}else if(c == 60){
+
+							s = S23; //< <> <= continuation
+							outWhileDFA = TRUE;
 							qc++;
 
-						}else if(c == 60){ //less than
+						}else if(c == 62){
 
-							s = S23;
+							s = S20; //> >= continuation
+							outWhileDFA = TRUE;
 							qc++;
 
-						}else if(c == 62){ //greater than
+						}else if(isSeparatorL(c)){
 
-							s = S20;
-
-						}else if(isSeparatorCharacter(c)){
-
-							s = S18;
+							s = S18; //SEPARATOR continuation
+							outWhileDFA = TRUE;
+							qc++;
 
 						}else{
 
@@ -232,13 +246,198 @@ void lAnalyzer(const char *fileName){
 
 							outWhileRead = TRUE;
 							outWhileDFA = TRUE;
+
 						}
 
 					break;
+
+					case S2:
+
+						if(isLetter(c) || isNumberDigit(c)){
+
+							qc++;
+							outWhileDFA = TRUE;
+
+						}else
+							s = S14;
+
+					break;
+
+					case S14: //accepted ID
+
+						if(isSeparatorAll(c)){
+
+							tokenReaded[qc] = '\0';
+							insToken(ID, tokenReaded);
+							s = S1;
+
+							tokenReaded = (char*)malloc(INITIAL_TOKEN_BUFFER);
+							qc = 0;
+							outWhileDFA = TRUE;
+
+						}else{
+
+							tokenReaded[qc+1] = '\0';
+
+							printf("ERR \"nao pertence a linguagem\"\n"
+									"<< linha: %d   %s\n", al, tokenReaded);
+
+							outWhileRead = TRUE;
+							outWhileDFA = TRUE;
+
+						}
+
+
+					break;
+
+					case S3:
+
+						if(qc < 10){
+
+							if(isNumberDigit(c)){
+
+								qc++;
+								outWhileDFA = TRUE;
+
+							}else
+								s = S15;
+
+						}else
+							s = S15;
+
+					break;
+
+					case S15: //accepted CONSTANT_NUMBER
+
+						if(isSeparatorAll(c)){
+
+							tokenReaded[qc] = '\0';
+							insToken(CONSTANT_NUMBER, tokenReaded);
+							s = S1;
+
+							tokenReaded = (char*)malloc(INITIAL_TOKEN_BUFFER);
+							qc = 0;
+							outWhileDFA = TRUE;
+
+						}else{
+
+							tokenReaded[qc+1] = '\0';
+
+							printf("ERR \"nao pertence a linguagem\"\n"
+									"<< linha: %d   %s\n", al, tokenReaded);
+
+							outWhileRead = TRUE;
+							outWhileDFA = TRUE;
+
+						}
+
+					break;
+
+					case S4:
+
+						if(isPrintableL(c)){
+
+							s = S6;
+							qc++;
+							outWhileDFA = TRUE;
+
+						}else if(c == 92){
+
+							s = S8;
+							qc++;
+							outWhileDFA = TRUE;
+
+						}else{
+
+							tokenReaded[qc+1] = '\0';
+
+							printf("ERR \"nao pertence a linguagem\"\n"
+									"<< linha: %d   %s\n", al, tokenReaded);
+
+							outWhileRead = TRUE;
+							outWhileDFA = TRUE;
+
+						}
+
+					break;
+
+					case S6:
+
+						if(c == 39)
+							s = S7;
+						else{
+
+							tokenReaded[qc+1] = '\0';
+
+							printf("ERR \"nao pertence a linguagem\"\n"
+									"<< linha: %d   %s\n", al, tokenReaded);
+
+							outWhileRead = TRUE;
+							outWhileDFA = TRUE;
+
+						}
+
+					break;
+
+					case S7: //accepted CONSTANT_CHARACTER
+
+						tokenReaded[qc+1] = '\0';
+						insToken(CONSTANT_CHARACTER, tokenReaded);
+						s = S1;
+
+						tokenReaded = (char*)malloc(INITIAL_TOKEN_BUFFER);
+						qc = 0;
+						outWhileDFA = TRUE;
+
+					break;
+
+					case S8:
+
+						if(isSE(c)){
+
+							s = S9;
+							qc++;
+							outWhileDFA = TRUE;
+
+						}else{
+
+							tokenReaded[qc+1] = '\0';
+
+							printf("ERR \"nao pertence a linguagem\"\n"
+									"<< linha: %d   %s\n", al, tokenReaded);
+
+							outWhileRead = TRUE;
+							outWhileDFA = TRUE;
+
+						}
+
+					break;
+
+					case S9:
+
+						if(c == 39)
+							s = S7;
+						else{
+
+							tokenReaded[qc+1] = '\0';
+
+							printf("ERR \"nao pertence a linguagem\"\n"
+									"<< linha: %d   %s\n", al, tokenReaded);
+
+							outWhileRead = TRUE;
+							outWhileDFA = TRUE;
+
+						}
+
+					break;
+
+					//TODO the left
+
+
+
 				}
 
 			}
-
 
 		}
 
@@ -252,28 +451,11 @@ void lAnalyzer(const char *fileName){
 }
 
 
-/*_Bool lAnalyzer(const char *fileName){
+_Bool isSE(int character){
 
-	preLAnalyzer(fileName);
-	actualPreToken = preTokens;
+	if(character == 116 || character == 110 || character == 92 || character == 39
+			|| character == 34)
+		return TRUE;
 
-	//traverses the list "preTokens" for match elements the language
-	for(; actualPreToken != NULL; actualPreToken = actualPreToken->next){
-
-		//TODO igonre the others, tab and \n
-		//*actualPreToken->name == '\0'; it ignores blank spaces
-		if( *actualPreToken->name == '\0' || isID(actualPreToken->name) || isConstantNumber(actualPreToken->name)
-				|| isConstantCharacter(actualPreToken->name) ) // TODO or, is the others finite machines
-			;
-		else{
-			printf("ERR \"Token nao reconhecido em -- %s --\"\n<<linha: %d   token: %s\n", fileName,
-					actualPreToken->line, actualPreToken->name);
-
-			return FALSE;
-		}
-
-	}
-
-	return TRUE;
-
-}*/
+	return FALSE;
+}

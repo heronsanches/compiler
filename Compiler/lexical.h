@@ -30,7 +30,6 @@ typedef enum{
 	CONSTANT_CHARACTER, CONSTANT_STRING
 }TokenType;
 
-//SN = State Null
 typedef enum{
 	S1, S2, S3, S4, S5, S6, S7, S8, S9, S10, S11, S12, S13, S14, S15, S16, S17,
 	S18, S19, S20, S21, S22, S23, S24, S25, S26
@@ -47,30 +46,22 @@ typedef struct Token{
 
 }Token;
 
-//it is used to save tokens yet not validated
-typedef struct PreToken{
-	char *name;
-	int line;
-	struct PreToken *next;
-}PreToken;
 
-Token *tokens;
-Token *actualToken;
-
-PreToken *preTokens;
-PreToken *actualPreToken;
+Token *tokens; //point to beginning the Token's list
+Token *actualToken; //point to beginning the Token's list
 
 
 //********function's prototype********
 void initTokens(); //initialize "tokens" and "actualToken"
-void initPreTokens(); //initialize "preTokens" and "actualPretoken"
-_Bool insPreToken(char *name, int line);
 _Bool insToken(TokenType tokenType, char *tokenName);
 
 _Bool isLetter(int letter);
 _Bool isNumberDigit(int character);
-_Bool isPrintableCharacter(int character);
-_Bool isSeparatorCharacter(int character);
+_Bool isPrintableAll(int character);
+_Bool isPrintableL(int character);
+_Bool isSeparatorL(int character); //less < ' > " characters
+_Bool isSeparatorAll(int character); //include all symbols separators
+_Bool isSE(int character); // t n \ ' "
 
 int toLowercase(int c);
 
