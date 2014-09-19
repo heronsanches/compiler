@@ -378,8 +378,8 @@ void lAnalyzer(const char *fileName){
 						}
 
 					break;
-
-					case S7: //accepted CONSTANT_CHARACTER
+					//TODO tratar os barra n etc
+					case S7: //accepted CONSTANT_CHARACTER //TODO tratar gfg'
 
 						tokenReaded[qc+1] = '\0';
 						insToken(CONSTANT_CHARACTER, tokenReaded);
