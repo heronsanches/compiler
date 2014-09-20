@@ -817,32 +817,13 @@ _Bool isSE(int character){
 
 void freeMemory(){
 
-	typedef struct Addresses{
-		Token *adr;
-		struct Addresses *next;
-
-	}Addrs;
-
-	Addrs *addrs = (Addrs*)malloc(sizeof(Addrs));
-	Addrs *actualAddrs = addrs;
 	actualToken = tokens;
+	Token *next  = NULL;
 
-	for(; actualToken != NULL; actualToken = actualToken->next, actualAddrs = actualAddrs->next){
+	for(; actualToken != NULL; actualToken = next){
 
-		actualAddrs->adr = actualToken;
-		actualAddrs->next = (Addrs*)malloc(sizeof(Addrs));
-
-	}
-
-	actualAddrs->adr = NULL;
-	actualAddrs->next = NULL;
-
-	Addrs *next;
-
-	for(actualAddrs=addrs; actualAddrs != NULL; actualAddrs = next){
-		free(actualAddrs->adr);
-		next = actualAddrs->next;
-		free(actualAddrs);
+		next = actualToken->next;
+		free(actualToken);
 
 	}
 
