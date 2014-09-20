@@ -18,11 +18,11 @@ struct{
 	   {"do", DO}, {"for", FOR}, {"from", FROM}, {"to", TO}, {"resize", RESIZE}, {"read", READ},
 	   {"print", PRINT} };
 
-const int separatorsCharacter[] = {32, 10, 9, 44, 46, 91, 93, 43, 45, 42, 47, 37, 40, 41, 61}; //size = 15
-const int QTDE_SEPARATORS = 15; //exclusive for dfa
+TokenType separatorsCharacter[QTDE_SEPARATORS] = {SPACE, TAB, FEED_LINE, COMMA, DOT, LEFT_BRACKET, RIGHT_BRACKET, PLUS, MINUS, MULTIPLICATION,
+		BAR, MOD, LEFT_PARENTHESIS, RIGHT_PARENTHESIS, EQUAL};
 
+//const int QTDE_SEPARATORS = 15; //exclusive for dfa
 
-//TODO struct RelationalOperators
 //TODO struct RelationalOperators
 
 
@@ -111,35 +111,45 @@ _Bool isPrintableAll(int character){
 
 _Bool isPrintableL(int character){
 
-	if( character != 92 && character != 39 && character != 34 && isPrintableAll(character))
+	if( character != INVERTED_BAR && character != SIMPLE_QUOTATION_MARK && character != DOUBLE_QUOTATION_MARK
+			&& isPrintableAll(character))
 		return TRUE;
 
 	return FALSE;
 }
 
 
-_Bool isSeparatorL(int character){
+TokenType isSeparatorL(int character){
 
 	int i;
 
 	for(i=0; i<QTDE_SEPARATORS; i++){
 
 		if(character == separatorsCharacter[i])
-			return TRUE;
+			return separatorsCharacter[i];
 
 	}
 
-	return FALSE;
+	return NOTHING;
 }
 
 
-_Bool isSeparatorAll(int character){
+TokenType isSeparatorAll(int character){
 
-	if(isSeparatorL(character) || character == 60 || character == 62 || character == 39
-			|| character == 34)
-		return TRUE;
+	TokenType tt;
 
-	return FALSE;
+	if(tt = isSeparatorL(character))
+		return tt;
+	else if(character == LESS)
+		return LESS;
+	else if(character == GREATER )
+		return GREATER;
+	else if(character == SIMPLE_QUOTATION_MARK)
+		return SIMPLE_QUOTATION_MARK;
+	else if(character == DOUBLE_QUOTATION_MARK)
+		return DOUBLE_QUOTATION_MARK;
+	else
+		return NOTHING;
 
 }
 
@@ -153,7 +163,6 @@ int toLowercase(int c){
 }
 
 
-//TODO test phase
 void lAnalyzer(const char *fileName){
 
 	FILE *sf; //source file
@@ -167,329 +176,529 @@ void lAnalyzer(const char *fileName){
 		char *tokenReaded = (char*)malloc(INITIAL_TOKEN_BUFFER);
 
 		States s = S1;
-		_Bool outWhileDFA = FALSE; //read another character
-		_Bool outWhileRead = FALSE; //exit read of the characters
+		_Bool outWhileDFA = FALSE; //exit DFA
+		_Bool goNextCharacter = TRUE;
 
-		//Read
-		while( !outWhileRead && (c = fgetc(sf)) != EOF ){ //TODO tentar tratar bfg' com do{]while();
+		TokenType tt;
 
-			if(c == 10)
-				al++;
-
-			outWhileDFA = FALSE;
+		//DFA
+		while( !outWhileDFA && (s == S1 || s == S2 || s == S3 || s == S4 || s == S5 || s == S6 ||
+				s == S7 || s == S8 || s == S9 || s == S12 || s == S14 || s == S15 || s == S17 ||
+				s == S18 || s == S20 ||	s == S21 || s == S23 || s == S24) ){
 
 			//increase memory allocated for "tokenReaded"
 			if(qc > INITIAL_TOKEN_BUFFER-1){
 				tokenReaded = (char*)realloc(tokenReaded, qc + 1);
 			}
 
-			//TODO DFA
-			while( !outWhileDFA && (s == S1 || s == S2 || s == S3 || s == S4 || s == S5 || s == S6 ||
-					s == S7 || s == S8 || s == S9 || s == S10 || s == S11 || s == S12 ||
-					s == S14 || s == S15 || s == S17 || s == S18 || s == S19 || s == S20 ||
-					s == S21 || s == S22 || s == S23 || s == S24) ){
+			switch(s){
 
-				tokenReaded[qc] = (char)c;
+				case S1:
 
-				switch(s){
+					if(goNextCharacter){
 
-					case S1:
+						if((c = fgetc(sf)) != EOF ){
+
+							if(c == FEED_LINE)
+								al++;
+
+							if(isLetter(c)){
+
+								s = S2; //ID
+								tokenReaded[qc] = (char)c;
+								qc++;
+
+							}else if(isNumberDigit(c)){
+
+								s = S3; //CONSTANT_NUMBER continuation
+								tokenReaded[qc] = (char)c;
+								qc++;
+
+							}else if(c == SIMPLE_QUOTATION_MARK){
+
+								s = S4; //CONSTANT_CHARACTER continuation
+								tokenReaded[qc] = (char)c;
+								qc++;
+
+							}else if(c == DOUBLE_QUOTATION_MARK){
+
+								s = S5;
+								tokenReaded[qc] = (char)c;
+								qc++; //CONSTANT_STRING continuation
+
+							}else if(c == LESS){
+
+								s = S23; //< <> <= continuation
+								tokenReaded[qc] = (char)c;
+								qc++;
+
+							}else if(c == GREATER){
+
+								s = S20; //> >= continuation
+								tokenReaded[qc] = (char)c;
+								qc++;
+
+							}else if(tt = isSeparatorL(c)){
+
+								s = S18;
+								tokenReaded[qc] = (char)c;
+
+							}else{
+
+								tokenReaded[qc] = (char)c;
+								tokenReaded[qc+1] = '\0';
+
+								printf("ERR \"nao pertence a linguagem\"\n"
+										"<< linha: %d   %s\n", al, tokenReaded);
+
+								//outWhileRead = TRUE;
+								outWhileDFA = TRUE;
+
+							}
+						}else
+							outWhileDFA = TRUE; //nothing to analyzer
+
+
+					}else{ //TODO duplicate code!
+
+						goNextCharacter = TRUE;
 
 						if(isLetter(c)){
 
 							s = S2; //ID
-							outWhileDFA = TRUE;
+							tokenReaded[qc] = (char)c;
 							qc++;
 
 						}else if(isNumberDigit(c)){
 
 							s = S3; //CONSTANT_NUMBER continuation
-							outWhileDFA = TRUE;
+							tokenReaded[qc] = (char)c;
 							qc++;
 
-						}else if(c == 39){
+						}else if(c == SIMPLE_QUOTATION_MARK){
 
 							s = S4; //CONSTANT_CHARACTER continuation
-							outWhileDFA = TRUE;
+							tokenReaded[qc] = (char)c;
 							qc++;
 
-						}else if(c == 34){
+						}else if(c == DOUBLE_QUOTATION_MARK){
 
 							s = S5;
-							outWhileDFA = TRUE;
+							tokenReaded[qc] = (char)c;
 							qc++; //CONSTANT_STRING continuation
 
-						}else if(c == 60){
+						}else if(c == LESS){
 
 							s = S23; //< <> <= continuation
-							outWhileDFA = TRUE;
+							tokenReaded[qc] = (char)c;
 							qc++;
 
-						}else if(c == 62){
+						}else if(c == GREATER){
 
 							s = S20; //> >= continuation
-							outWhileDFA = TRUE;
+							tokenReaded[qc] = (char)c;
 							qc++;
 
-						}else if(isSeparatorL(c)){
+						}else if(tt = isSeparatorL(c)){
 
-							s = S18; //SEPARATOR continuation
-							outWhileDFA = TRUE;
-							qc++;
+							s = S18;
+							tokenReaded[qc] = (char)c;
 
 						}else{
 
+							tokenReaded[qc] = (char)c;
 							tokenReaded[qc+1] = '\0';
 
 							printf("ERR \"nao pertence a linguagem\"\n"
 									"<< linha: %d   %s\n", al, tokenReaded);
 
-							outWhileRead = TRUE;
+							//outWhileRead = TRUE;
 							outWhileDFA = TRUE;
 
 						}
 
-					break;
+					}
 
-					case S2:
+				break;
+
+				case S2:
+
+					if( (c = fgetc(sf)) != EOF ){
+
+						if(c == FEED_LINE)
+							al++;
 
 						if(isLetter(c) || isNumberDigit(c)){
 
+							tokenReaded[qc] = (char)c;
 							qc++;
-							outWhileDFA = TRUE;
-
-						}else
-							s = S14;
-
-					break;
-
-					case S14: //accepted ID
-
-						if(isSeparatorAll(c)){
-
-							tokenReaded[qc] = '\0';
-							insToken(ID, tokenReaded);
-							s = S1;
-
-							tokenReaded = (char*)malloc(INITIAL_TOKEN_BUFFER);
-							qc = 0;
-							outWhileDFA = TRUE;
 
 						}else{
-
-							tokenReaded[qc+1] = '\0';
-
-							printf("ERR \"nao pertence a linguagem\"\n"
-									"<< linha: %d   %s\n", al, tokenReaded);
-
-							outWhileRead = TRUE;
-							outWhileDFA = TRUE;
-
+							s = S14;
 						}
+					}else{ //accepted ID
+
+						tokenReaded[qc+1] = '\0';
+						insToken(ID, tokenReaded);
+						outWhileDFA = TRUE;
+					}
+
+				break;
+
+				case S14: //accepted ID
+
+					if(isSeparatorAll(c)){
+
+						tokenReaded[qc] = '\0';
+						insToken(ID, tokenReaded);
+						s = S1;
+
+						tokenReaded = (char*)malloc(INITIAL_TOKEN_BUFFER);
+						qc = 0;
+						goNextCharacter = FALSE;
+
+					}else{
+
+						/*tokenReaded[qc] = (char)c;
+						tokenReaded[qc+1] = '\0';*/
+
+						printf("ERR \"nao pertence a linguagem\"\n"
+								"<< linha: %d   %c\n", al, c);
+
+						outWhileDFA = TRUE;
+
+					}
 
 
-					break;
+				break;
 
-					case S3:
+				case S3:
 
-						if(qc < 10){
+					if( (c = fgetc(sf)) != EOF ){
 
-							if(isNumberDigit(c)){
+						if(c == FEED_LINE)
+							al++;
 
-								qc++;
-								outWhileDFA = TRUE;
+						if(isNumberDigit(c) && qc < 10){
 
-							}else
-								s = S15;
+							tokenReaded[qc] = (char)c;
+							qc++;
 
 						}else
 							s = S15;
+					}else{ //accepted CONSTANT_NUMBER
 
-					break;
+						tokenReaded[qc+1] = (char)c;
+						insToken(CONSTANT_NUMBER, tokenReaded);
+						outWhileDFA = TRUE;
 
-					case S15: //accepted CONSTANT_NUMBER
+					}
 
-						if(isSeparatorAll(c)){
+				break;
 
-							tokenReaded[qc] = '\0';
-							insToken(CONSTANT_NUMBER, tokenReaded);
-							s = S1;
+				case S15: //accepted CONSTANT_NUMBER
 
-							tokenReaded = (char*)malloc(INITIAL_TOKEN_BUFFER);
-							qc = 0;
-							outWhileDFA = TRUE;
+					if(isSeparatorAll(c)){
 
-						}else{
+						tokenReaded[qc] = '\0';
+						insToken(CONSTANT_NUMBER, tokenReaded);
+						s = S1;
 
-							tokenReaded[qc+1] = '\0';
+						tokenReaded = (char*)malloc(INITIAL_TOKEN_BUFFER);
+						qc = 0;
 
-							printf("ERR \"nao pertence a linguagem\"\n"
-									"<< linha: %d   %s\n", al, tokenReaded);
+					}else{
 
-							outWhileRead = TRUE;
-							outWhileDFA = TRUE;
+						tokenReaded[qc] = (char)c;
+						tokenReaded[qc+1] = '\0';
 
-						}
+						printf("ERR \"nao pertence a linguagem\"\n"
+								"<< linha: %d   %s\n", al, tokenReaded);
 
-					break;
+						outWhileDFA = TRUE;
 
-					case S4:
+					}
+
+				break;
+
+				case S4:
+
+					if( (c = fgetc(sf)) != EOF ){
+
+						if(c == FEED_LINE)
+							al++;
 
 						if(isPrintableL(c)){
 
 							s = S6;
+							tokenReaded[qc] = (char)c;
 							qc++;
-							outWhileDFA = TRUE;
 
-						}else if(c == 92){
+						}else if(c == INVERTED_BAR){
 
 							s = S8;
+							tokenReaded[qc] = (char)c;
 							qc++;
-							outWhileDFA = TRUE;
 
 						}else{
 
+							tokenReaded[qc] = (char)c;
 							tokenReaded[qc+1] = '\0';
 
 							printf("ERR \"nao pertence a linguagem\"\n"
 									"<< linha: %d   %s\n", al, tokenReaded);
 
-							outWhileRead = TRUE;
 							outWhileDFA = TRUE;
 
 						}
+					}else{
 
-					break;
+						tokenReaded[qc] = '\0';
 
-					case S6:
+						printf("ERR \"nao pertence a linguagem\"\n"
+								"<< linha: %d   %s\n", al, tokenReaded);
 
-						if(c == 39)
-							s = S7;
-						else{
-
-							tokenReaded[qc+1] = '\0';
-
-							printf("ERR \"nao pertence a linguagem\"\n"
-									"<< linha: %d   %s\n", al, tokenReaded);
-
-							outWhileRead = TRUE;
-							outWhileDFA = TRUE;
-
-						}
-
-					break;
-					//TODO tratar os barra n etc
-					case S7: //accepted CONSTANT_CHARACTER //TODO tratar gfg'
-
-						tokenReaded[qc+1] = '\0';
-						insToken(CONSTANT_CHARACTER, tokenReaded);
-						s = S1;
-
-						tokenReaded = (char*)malloc(INITIAL_TOKEN_BUFFER);
-						qc = 0;
 						outWhileDFA = TRUE;
 
-					break;
+					}
 
-					case S8:
+				break;
+
+				case S6:
+
+					if( (c = fgetc(sf)) != EOF ){
+
+						if(c == FEED_LINE)
+							al++;
+
+						if(c == SIMPLE_QUOTATION_MARK){
+
+							s = S7;
+							tokenReaded[qc] = (char)c;
+
+						}else{
+
+							tokenReaded[qc] = (char)c;
+							tokenReaded[qc+1] = '\0';
+
+							printf("ERR \"nao pertence a linguagem\"\n"
+									"<< linha: %d   %s\n", al, tokenReaded);
+
+							outWhileDFA = TRUE;
+						}
+
+					}else{
+
+						tokenReaded[qc] = '\0';
+
+						printf("ERR \"nao pertence a linguagem\"\n"
+								"<< linha: %d   %s\n", al, tokenReaded);
+
+						outWhileDFA = TRUE;
+
+					}
+
+				break;
+				//TODO tratar os barra n etc
+				case S7: //accepted CONSTANT_CHARACTER //TODO tratar gfg'
+
+					tokenReaded[qc+1] = '\0';
+					insToken(CONSTANT_CHARACTER, tokenReaded);
+					s = S1;
+
+					tokenReaded = (char*)malloc(INITIAL_TOKEN_BUFFER);
+					qc = 0;
+
+				break;
+
+				case S8:
+
+					if( (c = fgetc(sf)) != EOF ){
+
+						if(c == FEED_LINE)
+							al++;
 
 						if(isSE(c)){
 
 							s = S9;
+							tokenReaded[qc] = (char)c;
 							qc++;
-							outWhileDFA = TRUE;
 
 						}else{
 
+							tokenReaded[qc] = (char)c;
 							tokenReaded[qc+1] = '\0';
 
 							printf("ERR \"nao pertence a linguagem\"\n"
 									"<< linha: %d   %s\n", al, tokenReaded);
 
-							outWhileRead = TRUE;
 							outWhileDFA = TRUE;
 
 						}
 
-					break;
+					}else{
 
-					case S9:
+						tokenReaded[qc] = '\0';
 
-						if(c == 39)
-							s = S7;
-						else{
+						printf("ERR \"nao pertence a linguagem\"\n"
+								"<< linha: %d   %s\n", al, tokenReaded);
 
-							tokenReaded[qc+1] = '\0';
-
-							printf("ERR \"nao pertence a linguagem\"\n"
-									"<< linha: %d   %s\n", al, tokenReaded);
-
-							outWhileRead = TRUE;
-							outWhileDFA = TRUE;
-
-						}
-
-					break;
-
-					case S5:
-
-						if(isPrintableL(c)){
-
-							qc++;
-							outWhileDFA = TRUE;
-
-						}else if(c == 34){
-
-							s = S17;
-
-						}else if(c == 92){
-
-							s = S12;
-							qc++;
-							outWhileDFA = TRUE;
-
-						}
-
-					break;
-
-					case S17: //accepted CONSTANT_STRING
-
-						tokenReaded[qc+1] = '\0';
-						insToken(CONSTANT_STRING, tokenReaded);
-						s = S1;
-
-						tokenReaded = (char*)malloc(INITIAL_TOKEN_BUFFER);
-						qc = 0;
 						outWhileDFA = TRUE;
 
-					break;
+					}
 
-					case S12:
+				break;
+
+				case S9:
+
+					if( (c = fgetc(sf)) != EOF ){
+
+						if(c == FEED_LINE)
+							al++;
+
+						if(c == SIMPLE_QUOTATION_MARK){
+
+							s = S7;
+							tokenReaded[qc] = (char)c;
+
+						}else{
+
+							tokenReaded[qc] = (char)c;
+							tokenReaded[qc+1] = '\0';
+
+							printf("ERR \"nao pertence a linguagem\"\n"
+									"<< linha: %d   %s\n", al, tokenReaded);
+
+							outWhileDFA = TRUE;
+
+						}
+
+					}else{
+
+						tokenReaded[qc] = '\0';
+
+						printf("ERR \"nao pertence a linguagem\"\n"
+								"<< linha: %d   %s\n", al, tokenReaded);
+
+						outWhileDFA = TRUE;
+
+					}
+
+				break;
+
+				case S5:
+
+					if( (c = fgetc(sf)) != EOF ){
+
+						if(c == FEED_LINE)
+							al++;
+
+						if(qc < 258){
+
+							if(isPrintableL(c)){
+
+								tokenReaded[qc] = (char)c;
+								qc++;
+
+							}else if(c == DOUBLE_QUOTATION_MARK){
+
+								tokenReaded[qc] = (char)c;
+								s = S17;
+
+							}else if(c == INVERTED_BAR){
+
+								s = S12;
+								tokenReaded[qc] = (char)c;
+								qc++;
+
+							}
+
+						}else{
+
+							tokenReaded[qc] = (char)c;
+							tokenReaded[qc+1] = '\0';
+
+							printf("ERR \"nao pertence a linguagem\"\n"
+									"<< linha: %d   %s\n", al, tokenReaded);
+
+							outWhileDFA = TRUE;
+
+						}
+
+					}else{
+
+						tokenReaded[qc] = '\0';
+
+						printf("ERR \"nao pertence a linguagem\"\n"
+								"<< linha: %d   %s\n", al, tokenReaded);
+
+						outWhileDFA = TRUE;
+
+					}
+
+				break;
+
+				case S17: //accepted CONSTANT_STRING
+
+					tokenReaded[qc+1] = '\0';
+					insToken(CONSTANT_STRING, tokenReaded);
+					s = S1;
+
+					tokenReaded = (char*)malloc(INITIAL_TOKEN_BUFFER);
+					qc = 0;
+
+				break;
+
+				case S12:
+
+					if( (c = fgetc(sf)) != EOF ){
+
+						if(c == FEED_LINE)
+							al++;
 
 						if(isSE(c)){
 
 							s = S5;
+							tokenReaded[qc] = (char)c;
 							qc++;
-							outWhileDFA = TRUE;
 
 						}else{
 
+							tokenReaded[qc] = (char)c;
 							tokenReaded[qc+1] = '\0';
 
 							printf("ERR \"nao pertence a linguagem\"\n"
 									"<< linha: %d   %s\n", al, tokenReaded);
 
-							outWhileRead = TRUE;
 							outWhileDFA = TRUE;
 						}
 
-					break;
+					}else{
 
-					case 23: //accepted relational operator <
+						tokenReaded[qc] = '\0';
 
-						if(c == 62 || c == 61)
+						printf("ERR \"nao pertence a linguagem\"\n"
+								"<< linha: %d   %s\n", al, tokenReaded);
+
+						outWhileDFA = TRUE;
+
+					}
+
+				break;
+
+				case S23: //accepted relational operator <
+
+					if( (c = fgetc(sf)) != EOF ){
+
+						if(c == FEED_LINE)
+							al++;
+
+						if(c == GREATER || c == EQUAL){
+
 							s = S24;
-						else{
+							tokenReaded[qc] = (char)c;
+
+						}else{
 
 							tokenReaded[qc] = '\0';
 							insToken(LESS, tokenReaded);
@@ -497,36 +706,95 @@ void lAnalyzer(const char *fileName){
 
 							qc = 0;
 							tokenReaded = (char*)malloc(INITIAL_TOKEN_BUFFER);
+							goNextCharacter = FALSE;
+
 						}
 
-					break;
+					}else{
 
-					case 24: //accepted relational operator <> <=
-
-						tokenReaded[qc+1] = '\0';
-
-						if(c == 62)
-							insToken(DIFFERENT, tokenReaded);
-						else
-							insToken(LESS_OR_EQUAL, tokenReaded);
-
-						s = S1;
-
-						tokenReaded = (char*)malloc(INITIAL_TOKEN_BUFFER);
-						qc = 0;
+						tokenReaded[qc] = '\0';
+						insToken(LESS, tokenReaded);
 						outWhileDFA = TRUE;
 
-					break;
+					}
 
+				break;
 
+				case S24: //accepted relational operator <> <=
 
+					tokenReaded[qc+1] = '\0';
 
+					if(c == GREATER)
+						insToken(DIFFERENT, tokenReaded);
+					else
+						insToken(LESS_OR_EQUAL, tokenReaded);
 
-				}
+					s = S1;
 
-			}
+					tokenReaded = (char*)malloc(INITIAL_TOKEN_BUFFER);
+					qc = 0;
 
-		}
+				break;
+
+				case S20: //accepted  >
+
+					if( (c = fgetc(sf)) != EOF ){
+
+						if(c == FEED_LINE)
+							al++;
+
+						if(c == EQUAL){
+
+							s = S21;
+							tokenReaded[qc] = (char)c;
+
+						}else{
+
+							tokenReaded[qc] = '\0';
+							insToken(GREATER, tokenReaded);
+							s = S1;
+
+							tokenReaded = (char*)malloc(INITIAL_TOKEN_BUFFER);
+							qc = 0;
+							goNextCharacter = FALSE;
+						}
+
+					}else{
+
+						tokenReaded[qc] = '\0';
+						insToken(GREATER, tokenReaded);
+
+						outWhileDFA = TRUE;
+
+					}
+
+				break;
+
+				case S21: //accepted >=
+
+					tokenReaded[qc+1] = '\0';
+					insToken(GREATER_OR_EQUAL, tokenReaded);
+					s = S1;
+
+					tokenReaded = (char*)malloc(INITIAL_TOKEN_BUFFER);
+					qc = 0;
+
+				break;
+
+				case S18: //accepted , . [ ] + - * / % ( ) = espaco tab quebra_de_linha
+
+					tokenReaded[qc+1] = '\0';
+					insToken(tt, tokenReaded);
+					s = S1;
+
+					tokenReaded = (char*)malloc(INITIAL_TOKEN_BUFFER);
+					qc = 0;
+
+				break;
+
+			} //final switc
+
+		} //final DFA
 
 		fclose(sf);
 
@@ -540,9 +808,42 @@ void lAnalyzer(const char *fileName){
 
 _Bool isSE(int character){
 
-	if(character == 116 || character == 110 || character == 92 || character == 39
-			|| character == 34)
+	if(character == LETTER_T_LOWER || character == LETTER_N_LOWER || character == INVERTED_BAR ||
+			character == SIMPLE_QUOTATION_MARK	|| character == DOUBLE_QUOTATION_MARK)
 		return TRUE;
 
 	return FALSE;
+}
+
+void freeMemory(){
+
+	typedef struct Addresses{
+		Token *adr;
+		struct Addresses *next;
+
+	}Addrs;
+
+	Addrs *addrs = (Addrs*)malloc(sizeof(Addrs));
+	Addrs *actualAddrs = addrs;
+	actualToken = tokens;
+
+	for(; actualToken != NULL; actualToken = actualToken->next, actualAddrs = actualAddrs->next){
+
+		actualAddrs->adr = actualToken;
+		actualAddrs->next = (Addrs*)malloc(sizeof(Addrs));
+
+	}
+
+	actualAddrs->adr = NULL;
+	actualAddrs->next = NULL;
+
+	Addrs *next;
+
+	for(actualAddrs=addrs; actualAddrs != NULL; actualAddrs = next){
+		free(actualAddrs->adr);
+		next = actualAddrs->next;
+		free(actualAddrs);
+
+	}
+
 }

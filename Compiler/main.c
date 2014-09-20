@@ -16,8 +16,7 @@ int main(int argc, char *argv[]){
 	}else{
 
 		lAnalyzer(argv[1]);
-
-		//TODO to make a function to free all memory allocated by program
+		freeMemory();
 
 	}
 
