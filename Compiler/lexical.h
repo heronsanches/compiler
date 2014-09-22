@@ -66,8 +66,9 @@ TokenType isSeparatorAll(int character); //include all symbols separators
 _Bool isSE(int character); // t n \ ' "
 
 int toLowercase(int c);
+_Bool verifyingFile(const char *fileName); //it verifies characters invalids in the file, return true if do not exists invalid character
 
-void lAnalyzer(const char *fileName); //TODO unique DFA
+void lAnalyzer(const char *fileName); //unique DFA
 void freeMemory();
 
 
