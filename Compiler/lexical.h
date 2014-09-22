@@ -34,7 +34,7 @@ typedef enum{
 
 typedef enum{
 	S1, S2, S3, S4, S5, S6, S7, S8, S9, S12, S14, S15, S17,
-	S18, S20, S21, S23, S24
+	S18, S20, S21, S23, S24, S10
 }States;
 
 //it is used to save a token after its validation
