@@ -407,7 +407,6 @@ void lAnalyzer(const char *fileName){
 
 								s = S15;
 
-
 							}
 
 						}else{ //accepted CONSTANT_NUMBER
@@ -432,7 +431,8 @@ void lAnalyzer(const char *fileName){
 							qc = 0;
 							goNextCharacter = FALSE;
 
-						}else{
+						}else{ //TODO verifying all characters of err, probable have to change the DFA
+							//TODO remember to use realloc
 
 							tokenReaded[qc] = (char)c;
 							tokenReaded[qc+1] = '\0';
@@ -478,6 +478,7 @@ void lAnalyzer(const char *fileName){
 					break;
 
 					case S10: //err's treatment
+						//TODO remember to use realloc
 
 						do{
 
