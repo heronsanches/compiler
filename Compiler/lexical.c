@@ -280,7 +280,7 @@ void lAnalyzer(const char *fileName){
 
 									printf("LINHA %d: %s\n", al, c);
 
-									//outWhileDFA = TRUE;
+
 									s = S1;
 									tokenReaded = (char*)malloc(INITIAL_TOKEN_BUFFER);
 									qc = 0;
@@ -478,9 +478,12 @@ void lAnalyzer(const char *fileName){
 					break;
 
 					case S10: //err's treatment
-						//TODO remember to use realloc
 
 						do{
+
+							if(qc > INITIAL_TOKEN_BUFFER-1){
+								tokenReaded = (char*)realloc(tokenReaded, qc + 1);
+							}
 
 							if( c == SIMPLE_QUOTATION_MARK || c == TAB){
 
@@ -498,6 +501,8 @@ void lAnalyzer(const char *fileName){
 								tokenReaded[qc] = '\0';
 								printf("LINHA %d: %s\n", al, tokenReaded);
 								go = FALSE;
+								tokenReaded = (char*)malloc(INITIAL_TOKEN_BUFFER);
+								qc = 0;
 								al++;
 								s = S1;
 								go = FALSE;
@@ -534,12 +539,8 @@ void lAnalyzer(const char *fileName){
 
 							}else{
 
-								tokenReaded[qc] = (char)c;
-								tokenReaded[qc+1] = '\0';
+								s = S10;
 
-								printf("LINHA %d: %s\n", al, tokenReaded);
-
-								outWhileDFA = TRUE;
 							}
 
 						}else{
@@ -577,12 +578,7 @@ void lAnalyzer(const char *fileName){
 
 							}else{
 
-								tokenReaded[qc] = (char)c;
-								tokenReaded[qc+1] = '\0';
-
-								printf("LINHA %d: %s\n", al, tokenReaded);
-
-								outWhileDFA = TRUE;
+								s = S10;
 
 							}
 
@@ -609,12 +605,7 @@ void lAnalyzer(const char *fileName){
 
 							}else{
 
-								tokenReaded[qc] = (char)c;
-								tokenReaded[qc+1] = '\0';
-
-								printf("LINHA %d: %s\n", al, tokenReaded);
-
-								outWhileDFA = TRUE;
+								s = S10;
 
 							}
 
