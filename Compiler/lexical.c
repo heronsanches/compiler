@@ -210,6 +210,7 @@ void lAnalyzer(const char *fileName){
 			States s = S1;
 			_Bool outWhileDFA = FALSE; //exit DFA
 			_Bool goNextCharacter = TRUE;
+			_Bool go = TRUE;
 
 			TokenType tt;
 
@@ -477,8 +478,6 @@ void lAnalyzer(const char *fileName){
 					break;
 
 					case S10: //err's treatment
-
-						_Bool go = TRUE;
 
 						do{
 
