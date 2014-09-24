@@ -19,6 +19,7 @@
 #define FALSE 0
 #define QTDE_RESERVED_WORDS 17
 #define QTDE_SEPARATORS 15
+#define QTDE_SEPARATORS_STRANGERS 15
 
 
 typedef enum{
@@ -33,8 +34,13 @@ typedef enum{
 }TokenType;
 
 typedef enum{
+	EXCLAMATION=33, OLD_GAME=35, DOLLAR=36, E_COMMERCIAL=38, COLON=58, SEMICOLON=59, INTERROGATION=63,
+	AT=64, CIRCUMFLEX=94, UNDERLINE=95, CRASE=96, RIGHT_KEY=125, LEFT_KEY=123, TIO_ACCENT=126, UP_BAR=124
+}StrangerType;
+
+typedef enum{
 	S1, S2, S3, S4, S5, S6, S7, S8, S9, S12, S14, S15, S17,
-	S18, S20, S21, S23, S24, S10
+	S18, S20, S21, S23, S24, S10, S11, S13
 }States;
 
 //it is used to save a token after its validation
@@ -64,6 +70,7 @@ _Bool isPrintableL(int character);
 TokenType isSeparatorL(int character); //less < ' > " characters
 TokenType isSeparatorAll(int character); //include all symbols separators
 _Bool isSE(int character); // t n \ ' "
+_Bool isStrangerSeparator(int character);
 
 int toLowercase(int c);
 _Bool verifyingFile(const char *fileName); //it verifies characters invalids in the file, return true if do not exists invalid character
