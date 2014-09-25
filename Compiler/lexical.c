@@ -439,7 +439,7 @@ void lAnalyzer(const char *fileName){
 
 					case S15: //accepted CONSTANT_NUMBER
 
-						if(isSeparatorAll(c) || isStrangerSeparator(c)){
+						if(!isNumberDigit() && !isLetter()){ //is it a separator?
 
 							tokenReaded[qc] = '\0';
 							insToken(CONSTANT_NUMBER, tokenReaded);
@@ -674,7 +674,7 @@ void lAnalyzer(const char *fileName){
 									tokenReaded[qc] = (char)c;
 									qc++;
 
-								}else if(c == DOUBLE_QUOTATION_MARK){
+								}else if(c == DOUBLE_QUOTATION_MARK && qc < 258){
 
 									tokenReaded[qc] = (char)c;
 									s = S17;
