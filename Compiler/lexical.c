@@ -358,6 +358,8 @@ void lAnalyzer(const char *fileName){
 
 								printf("LINHA %d: %s\n", al, tokenReaded);
 
+								tokenReaded = (char*)malloc(INITIAL_TOKEN_BUFFER);
+								qc = 0;
 								s = S1;
 
 							}
@@ -391,8 +393,6 @@ void lAnalyzer(const char *fileName){
 
 					case S14: //accepted ID
 
-						if(isSeparatorAll(c) || isStrangerSeparator(c)){
-
 							tokenReaded[qc] = '\0';
 							insToken(ID, tokenReaded);
 
@@ -401,14 +401,6 @@ void lAnalyzer(const char *fileName){
 
 							goNextCharacter = FALSE;
 							s = S1;
-
-						}else{ //it is tab or feedline
-
-							tokenReaded = (char*)malloc(INITIAL_TOKEN_BUFFER);
-							qc = 0;
-							s = S1;
-
-						}
 
 					break;
 
@@ -439,7 +431,7 @@ void lAnalyzer(const char *fileName){
 
 					case S15: //accepted CONSTANT_NUMBER
 
-						if(!isNumberDigit() && !isLetter()){ //is it a separator?
+						if(!isNumberDigit(c) && !isLetter(c)){ //is it a separator?
 
 							tokenReaded[qc] = '\0';
 							insToken(CONSTANT_NUMBER, tokenReaded);
@@ -512,9 +504,7 @@ void lAnalyzer(const char *fileName){
 						}else{
 
 							tokenReaded[qc] = '\0';
-
 							printf("LINHA %d: %s\n", al, tokenReaded);
-
 							outWhileDFA = TRUE;
 
 						}
@@ -524,6 +514,7 @@ void lAnalyzer(const char *fileName){
 					case S10: //err's treatment
 
 						do{
+							go = TRUE;
 
 							if(qc > INITIAL_TOKEN_BUFFER-1){
 								tokenReaded = (char*)realloc(tokenReaded, qc + 1);
@@ -588,9 +579,7 @@ void lAnalyzer(const char *fileName){
 						}else{
 
 							tokenReaded[qc] = '\0';
-
 							printf("LINHA %d: %s\n", al, tokenReaded);
-
 							outWhileDFA = TRUE;
 
 						}
@@ -627,9 +616,7 @@ void lAnalyzer(const char *fileName){
 						}else{
 
 							tokenReaded[qc] = '\0';
-
 							printf("LINHA %d: %s\n", al, tokenReaded);
-
 							outWhileDFA = TRUE;
 
 						}
@@ -654,9 +641,7 @@ void lAnalyzer(const char *fileName){
 						}else{
 
 							tokenReaded[qc] = '\0';
-
 							printf("LINHA %d: %s\n", al, tokenReaded);
-
 							outWhileDFA = TRUE;
 
 						}
@@ -674,7 +659,7 @@ void lAnalyzer(const char *fileName){
 									tokenReaded[qc] = (char)c;
 									qc++;
 
-								}else if(c == DOUBLE_QUOTATION_MARK && qc < 258){
+								}else if(c == DOUBLE_QUOTATION_MARK){
 
 									tokenReaded[qc] = (char)c;
 									s = S17;
@@ -700,9 +685,7 @@ void lAnalyzer(const char *fileName){
 						}else{
 
 							tokenReaded[qc] = '\0';
-
 							printf("LINHA %d: %s\n", al, tokenReaded);
-
 							outWhileDFA = TRUE;
 
 						}
@@ -712,6 +695,7 @@ void lAnalyzer(const char *fileName){
 					case S13:
 
 						do{
+							go = TRUE;
 
 							if(qc > INITIAL_TOKEN_BUFFER-1){
 								tokenReaded = (char*)realloc(tokenReaded, qc + 1);
@@ -773,16 +757,21 @@ void lAnalyzer(const char *fileName){
 
 						if( (c = fgetc(sf)) != EOF ){
 
-							if(isSE(c)){
+							if(qc < 258){
 
-								s = S5;
-								tokenReaded[qc] = (char)c;
-								qc++;
+								if(isSE(c)){
 
-							}else{
+									s = S5;
+									tokenReaded[qc] = (char)c;
+									qc++;
 
+								}else{
+
+									s = S13;
+								}
+
+							}else
 								s = S13;
-							}
 
 						}else{
 
@@ -835,7 +824,6 @@ void lAnalyzer(const char *fileName){
 							insToken(LESS_OR_EQUAL, tokenReaded);
 
 						s = S1;
-
 						tokenReaded = (char*)malloc(INITIAL_TOKEN_BUFFER);
 						qc = 0;
 
@@ -865,7 +853,6 @@ void lAnalyzer(const char *fileName){
 
 							tokenReaded[qc] = '\0';
 							insToken(GREATER, tokenReaded);
-
 							outWhileDFA = TRUE;
 						}
 
