@@ -531,7 +531,7 @@ void lAnalyzer(const char *fileName){
 
 							}else if(c == FEED_LINE){
 
-								tokenReaded[qc] = '\0';
+								tokenReaded[qc] = '\0'; //todo  verificar se é para mostrar o pulo delinha também
 								printf("LINHA %d: %s\n", al, tokenReaded);
 								tokenReaded = (char*)malloc(INITIAL_TOKEN_BUFFER);
 								qc = 0;
@@ -890,8 +890,7 @@ void lAnalyzer(const char *fileName){
 
 _Bool isSE(int character){
 
-	if(character == LETTER_T_LOWER || character == (LETTER_T_LOWER-32) || character == LETTER_N_LOWER ||
-			character == (LETTER_N_LOWER-32) || character == INVERTED_BAR ||
+	if(character == LETTER_T_LOWER || character == LETTER_N_LOWER || character == INVERTED_BAR ||
 			character == SIMPLE_QUOTATION_MARK	|| character == DOUBLE_QUOTATION_MARK)
 		return TRUE;
 
