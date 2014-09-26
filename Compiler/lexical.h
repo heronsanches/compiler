@@ -49,7 +49,7 @@ typedef struct Token{
 	struct Token *next;
 	union{
 		char *name;
-		unsigned long long num; //TODO see more about .. at least 64bit
+		long long int num; //TODO see more about ..
 	}attribute;
 
 }Token;
@@ -70,7 +70,7 @@ _Bool isPrintableL(int character);
 TokenType isSeparatorL(int character); //less < ' > " characters
 TokenType isSeparatorAll(int character); //include all symbols separators
 _Bool isSE(int character); // t n \ ' "
-_Bool isStrangerSeparator(int character);
+//_Bool isStrangerSeparator(int character);
 
 int toLowercase(int c);
 _Bool verifyingFile(const char *fileName); //it verifies characters invalids in the file, return true if do not exists invalid character
