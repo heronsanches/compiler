@@ -500,7 +500,7 @@ void lAnalyzer(const char *fileName){
 								tokenReaded[qc] = (char)c;
 								qc++;
 
-							}else //err, it must capture all characters between the simple quote and show this how a err
+							}else
 								s = S10; //treatment of err
 
 						}else{
@@ -520,7 +520,7 @@ void lAnalyzer(const char *fileName){
 								tokenReaded = (char*)realloc(tokenReaded, qc + 2);
 							}
 
-							if( c == SIMPLE_QUOTATION_MARK || c == TAB){ //TODO I already go out my doubt about '', it is a err
+							if( c == SIMPLE_QUOTATION_MARK){
 
 								tokenReaded[qc] = (char)c;
 								tokenReaded[qc+1] = '\0';
@@ -529,9 +529,17 @@ void lAnalyzer(const char *fileName){
 								qc = 0;
 								s = S1;
 
+							}else if(c == TAB){
+
+								tokenReaded[qc] = '\0';
+								printf("LINHA %d: %s\n", al, tokenReaded);
+								tokenReaded = (char*)malloc(INITIAL_TOKEN_BUFFER);
+								qc = 0;
+								s = S1;
+
 							}else if(c == FEED_LINE){
 
-								tokenReaded[qc] = '\0'; //todo  verificar se é para mostrar o pulo delinha também
+								tokenReaded[qc] = '\0';
 								printf("LINHA %d: %s\n", al, tokenReaded);
 								tokenReaded = (char*)malloc(INITIAL_TOKEN_BUFFER);
 								qc = 0;
@@ -694,10 +702,19 @@ void lAnalyzer(const char *fileName){
 								tokenReaded = (char*)realloc(tokenReaded, qc + 2);
 							}
 
-							if( c == DOUBLE_QUOTATION_MARK || c == TAB){
+							if( c == DOUBLE_QUOTATION_MARK){
 
 								tokenReaded[qc] = (char)c;
 								tokenReaded[qc+1] = '\0';
+								printf("LINHA %d: %s\n", al, tokenReaded);
+								tokenReaded = (char*)malloc(INITIAL_TOKEN_BUFFER);
+								qc = 0;
+								qcr = 0;
+								s = S1;
+
+							}else if(c == TAB){
+
+								tokenReaded[qc] = '\0';
 								printf("LINHA %d: %s\n", al, tokenReaded);
 								tokenReaded = (char*)malloc(INITIAL_TOKEN_BUFFER);
 								qc = 0;
