@@ -892,7 +892,7 @@ void lAnalyzer(const char *fileName){
 			} //final DFA
 
 		}else{
-			printf("ARQUIVO INVÁLIDO!\n");
+			printf("ARQUIVO INVALIDO!\n");
 		}
 
 		fclose(sf);
