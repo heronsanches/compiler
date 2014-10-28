@@ -33,6 +33,11 @@ typedef enum{
 	NOTHING=0
 }TokenType;
 
+typedef struct{
+	char *name;
+	TokenType type;
+}ReservedWord;
+
 typedef enum{
 	EXCLAMATION=33, OLD_GAME=35, DOLLAR=36, E_COMMERCIAL=38, COLON=58, SEMICOLON=59, INTERROGATION=63,
 	AT=64, CIRCUMFLEX=94, UNDERLINE=95, CRASE=96, RIGHT_KEY=125, LEFT_KEY=123, TIO_ACCENT=126, UP_BAR=124
@@ -56,7 +61,7 @@ typedef struct Token{
 
 
 Token *tokens; //point to beginning the Token's list
-Token *actualToken; //point to beginning the Token's list
+Token *actualToken; //point to actual token of Token's list
 
 
 //********function's prototype********
@@ -70,6 +75,7 @@ _Bool isPrintableL(int character);
 TokenType isSeparatorL(int character); //less < ' > " characters
 TokenType isSeparatorAll(int character); //include all symbols separators
 _Bool isSE(int character); // t n \ ' "
+TokenType isReseverdWord(char *name);
 //_Bool isStrangerSeparator(int character);
 
 int toLowercase(int c);

@@ -6,13 +6,11 @@
  */
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include "lexical.h"
 
 
-struct{
-	char *name;
-	TokenType type;
-}ReservedWords[QTDE_RESERVED_WORDS] =
+ReservedWord reservedWords[QTDE_RESERVED_WORDS] =
 	{ {"declare", DECLARE}, {"as", AS}, {"number", NUMBER}, {"letter", LETTER},
 	   {"put", PUT}, {"in", IN}, {"if", IF}, {"then", THEN}, {"else", ELSE}, {"foreach", FOREACH},
 	   {"do", DO}, {"for", FOR}, {"from", FROM}, {"to", TO}, {"resize", RESIZE}, {"read", READ},
@@ -36,9 +34,23 @@ void initTokens(){
 }
 
 
+TokenType isReseverdWord(char *name){
+
+	int i;
+	for(i=0; i<QTDE_RESERVED_WORDS; i++){
+
+		if(!strcmp(name, reservedWords->name))
+			return  reservedWords->type;
+	}
+
+	return NOTHING;
+}
+
+
 _Bool insToken(TokenType tokenType, char *tokenName){
 
 	Token *t;
+	TokenType tt;
 
 	if( (t = (Token*)malloc(sizeof(Token))) ){
 
@@ -47,9 +59,20 @@ _Bool insToken(TokenType tokenType, char *tokenName){
 			tokens = t;
 			tokens->type = tokenType;
 
-			if(tokenType != CONSTANT_NUMBER && tokenType != NUMBER)
+			if(tokenType != CONSTANT_NUMBER && tokenType != NUMBER){
+
+				if(tokenType == ID){
+
+					tt = isReseverdWord(tokenName);
+
+					if(tt)
+						tokens->type = tt;
+
+				}
+
 				tokens->attribute.name = tokenName;
-			else
+
+			}else
 				tokens->attribute.num = atoll(tokenName); //TODO string to long long
 
 			tokens->next = NULL;
@@ -64,9 +87,20 @@ _Bool insToken(TokenType tokenType, char *tokenName){
 			actualToken = t;
 			actualToken->type = tokenType;
 
-			if(tokenType != CONSTANT_NUMBER && tokenType != NUMBER)
-				actualToken->attribute.name = tokenName;
-			else
+			if(tokenType != CONSTANT_NUMBER && tokenType != NUMBER){
+
+				if(tokenType == ID){
+
+					tt = isReseverdWord(tokenName);
+
+					if(tt)
+						tokens->type = tt;
+
+				}
+
+				tokens->attribute.name = tokenName;
+
+			}else
 				actualToken->attribute.num = atoll(tokenName); //TODO string to long long
 
 			actualToken->next = NULL;
@@ -374,7 +408,7 @@ void lAnalyzer(const char *fileName){
 
 							if(isLetter(c) || isNumberDigit(c)){
 
-								tokenReaded[qc] = (char)c;
+								tokenReaded[qc] = (char)toLowercase(c);
 								qc++;
 
 							}else{
