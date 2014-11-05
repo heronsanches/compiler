@@ -1,0 +1,45 @@
+ #SS -> #S $
+ #S -> #CMDS
+ #CMDS -> #CMD #CMDS
+ #CMDS -> &
+ #CMD -> #DEC
+ #CMD -> #AV
+ #CMD -> #ATR
+ #CMD -> #DC
+ #CMD -> #LOOP
+ #CMD -> #R
+ #CMD -> #P
+ #DEC -> declare #LI as #TIP .
+ #LI -> #OP_LI #LI'
+ #LI' -> , #OP_LI #LI'
+ #LI' -> &
+ #OP_LI -> id
+ #OP_LI -> id [ ]
+ #TIP -> number 
+ #TIP -> letter
+ #AV -> resize id to #EA
+ #EA -> #EA2 #EA'
+ #EA' -> #SM #EA2 #EA'
+ #EA' -> &
+ #SM -> +
+ #SM -> -
+ #EA2 -> #EA3 #EA2'
+ #EA2' -> #MDP #EA3 #EA2'
+ #EA2' -> &
+ #MDP -> *
+ #MDP -> /
+ #MDP -> %
+ #EA3 -> ( #EA )
+ #EA3 -> #VAR
+ #EA3 -> - ( #EA )
+ #EA3 -> - #VAR
+ #VAR -> id [ #EA ]
+ #VAR -> number
+ #VAR -> letter
+ #VAR -> cte_num
+ #VAR -> cte_car
+ #ATR -> put #ATR'
+ #ATR' -> #EA in id #ATR''
+ #ATR' -> cte_str in id .
+ #ATR'' -> .
+ #ATR'' -> [ #EA ] .
