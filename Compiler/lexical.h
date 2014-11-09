@@ -81,7 +81,7 @@ TokenType isReseverdWord(char *name);
 int toLowercase(int c);
 _Bool verifyingFile(const char *fileName); //it verifies characters invalids in the file, return true if do not exists invalid character
 
-void lAnalyzer(const char *fileName); //unique DFA
+_Bool lAnalyzer(const char *fileName); //unique DFA
 void freeMemory();
 
 

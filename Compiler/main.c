@@ -15,7 +15,9 @@ int main(int argc, char *argv[]){
 				"<< Deve-se usar: nomedoPrograma nomeArquivoCodigofonte\n");
 	}else{
 
-		lAnalyzer(argv[1]);
+		if( lAnalyzer(argv[1]) )
+			//TODO sAnalyzer();
+
 		freeMemory();
 
 	}

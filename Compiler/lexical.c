@@ -39,8 +39,8 @@ TokenType isReseverdWord(char *name){
 	int i;
 	for(i=0; i<QTDE_RESERVED_WORDS; i++){
 
-		if(!strcmp(name, reservedWords->name))
-			return  reservedWords->type;
+		if(!strcmp(name, reservedWords[i]->name)) //TODO test this
+			return  reservedWords[i]->type;
 	}
 
 	return NOTHING;
@@ -244,10 +244,11 @@ _Bool verifyingFile(const char *fileName){
 }
 
 
-void lAnalyzer(const char *fileName){
+_Bool lAnalyzer(const char *fileName){
 
 	FILE *sf; //source file
 	initTokens();
+	_Bool okAnalyzer = TRUE;
 
 	if( (sf = fopen(fileName, "r")) != NULL ){
 
@@ -262,7 +263,6 @@ void lAnalyzer(const char *fileName){
 			States s = S1;
 			_Bool outWhileDFA = FALSE; //exit DFA
 			_Bool goNextCharacter = TRUE;
-			_Bool go = TRUE;
 
 			TokenType tt;
 
@@ -330,6 +330,7 @@ void lAnalyzer(const char *fileName){
 									tokenReaded[qc] = (char)c;
 									tokenReaded[qc+1] = '\0';
 									printf("LINHA %d: %s\n", al, tokenReaded);
+									okAnalyzer = FALSE;
 
 									s = S1;
 									tokenReaded = (char*)malloc(INITIAL_TOKEN_BUFFER);
@@ -391,6 +392,7 @@ void lAnalyzer(const char *fileName){
 								tokenReaded[qc+1] = '\0';
 
 								printf("LINHA %d: %s\n", al, tokenReaded);
+								okAnalyzer = FALSE;
 
 								tokenReaded = (char*)malloc(INITIAL_TOKEN_BUFFER);
 								qc = 0;
@@ -500,6 +502,7 @@ void lAnalyzer(const char *fileName){
 
 								tokenReaded[qc] = '\0';
 								printf("LINHA %d: %s\n", al, tokenReaded);
+								okAnalyzer = FALSE;
 								outWhileDFA = TRUE;
 
 							}
@@ -508,6 +511,7 @@ void lAnalyzer(const char *fileName){
 
 							tokenReaded[qc] = '\0';
 							printf("LINHA %d: %s\n", al, tokenReaded);
+							okAnalyzer = FALSE;
 							s = S1;
 
 							tokenReaded = (char*)malloc(INITIAL_TOKEN_BUFFER);
@@ -541,6 +545,7 @@ void lAnalyzer(const char *fileName){
 
 							tokenReaded[qc] = '\0';
 							printf("LINHA %d: %s\n", al, tokenReaded);
+							okAnalyzer = FALSE;
 							outWhileDFA = TRUE;
 
 						}
@@ -559,6 +564,7 @@ void lAnalyzer(const char *fileName){
 								tokenReaded[qc] = (char)c;
 								tokenReaded[qc+1] = '\0';
 								printf("LINHA %d: %s\n", al, tokenReaded);
+								okAnalyzer = FALSE;
 								tokenReaded = (char*)malloc(INITIAL_TOKEN_BUFFER);
 								qc = 0;
 								s = S1;
@@ -567,6 +573,7 @@ void lAnalyzer(const char *fileName){
 
 								tokenReaded[qc] = '\0';
 								printf("LINHA %d: %s\n", al, tokenReaded);
+								okAnalyzer = FALSE;
 								tokenReaded = (char*)malloc(INITIAL_TOKEN_BUFFER);
 								qc = 0;
 								s = S1;
@@ -575,6 +582,7 @@ void lAnalyzer(const char *fileName){
 
 								tokenReaded[qc] = '\0';
 								printf("LINHA %d: %s\n", al, tokenReaded);
+								okAnalyzer = FALSE;
 								tokenReaded = (char*)malloc(INITIAL_TOKEN_BUFFER);
 								qc = 0;
 								al++;
@@ -591,6 +599,7 @@ void lAnalyzer(const char *fileName){
 
 									tokenReaded[qc] = '\0';
 									printf("LINHA %d: %s\n", al, tokenReaded);
+									okAnalyzer = FALSE;
 									outWhileDFA = TRUE;
 
 								}
@@ -617,6 +626,7 @@ void lAnalyzer(const char *fileName){
 
 							tokenReaded[qc] = '\0';
 							printf("LINHA %d: %s\n", al, tokenReaded);
+							okAnalyzer = FALSE;
 							outWhileDFA = TRUE;
 
 						}
@@ -654,6 +664,7 @@ void lAnalyzer(const char *fileName){
 
 							tokenReaded[qc] = '\0';
 							printf("LINHA %d: %s\n", al, tokenReaded);
+							okAnalyzer = FALSE;
 							outWhileDFA = TRUE;
 
 						}
@@ -679,6 +690,7 @@ void lAnalyzer(const char *fileName){
 
 							tokenReaded[qc] = '\0';
 							printf("LINHA %d: %s\n", al, tokenReaded);
+							okAnalyzer = FALSE;
 							outWhileDFA = TRUE;
 
 						}
@@ -724,6 +736,7 @@ void lAnalyzer(const char *fileName){
 
 							tokenReaded[qc] = '\0';
 							printf("LINHA %d: %s\n", al, tokenReaded);
+							okAnalyzer = FALSE;
 							outWhileDFA = TRUE;
 
 						}
@@ -741,6 +754,7 @@ void lAnalyzer(const char *fileName){
 								tokenReaded[qc] = (char)c;
 								tokenReaded[qc+1] = '\0';
 								printf("LINHA %d: %s\n", al, tokenReaded);
+								okAnalyzer = FALSE;
 								tokenReaded = (char*)malloc(INITIAL_TOKEN_BUFFER);
 								qc = 0;
 								qcr = 0;
@@ -750,6 +764,7 @@ void lAnalyzer(const char *fileName){
 
 								tokenReaded[qc] = '\0';
 								printf("LINHA %d: %s\n", al, tokenReaded);
+								okAnalyzer = FALSE;
 								tokenReaded = (char*)malloc(INITIAL_TOKEN_BUFFER);
 								qc = 0;
 								qcr = 0;
@@ -759,6 +774,7 @@ void lAnalyzer(const char *fileName){
 
 								tokenReaded[qc] = '\0';
 								printf("LINHA %d: %s\n", al, tokenReaded);
+								okAnalyzer = FALSE;
 								tokenReaded = (char*)malloc(INITIAL_TOKEN_BUFFER);
 								qc = 0;
 								qcr = 0;
@@ -776,6 +792,7 @@ void lAnalyzer(const char *fileName){
 
 									tokenReaded[qc] = '\0';
 									printf("LINHA %d: %s\n", al, tokenReaded);
+									okAnalyzer = FALSE;
 									outWhileDFA = TRUE;
 
 								}
@@ -815,6 +832,7 @@ void lAnalyzer(const char *fileName){
 
 							tokenReaded[qc] = '\0';
 							printf("LINHA %d: %s\n", al, tokenReaded);
+							okAnalyzer = FALSE;
 							outWhileDFA = TRUE;
 
 						}
@@ -926,15 +944,24 @@ void lAnalyzer(const char *fileName){
 			} //final DFA
 
 		}else{
+
 			printf("ARQUIVO INVALIDO!\n");
+			okAnalyzer = FALSE;
+
 		}
 
 		fclose(sf);
 
 	}else{
+
 		printf("ERR \"Possivelmente o arquivo --%s-- nao existe.\"\n"
 				"<< Verifique o nome do arquivo\n", fileName);
+
+		okAnalyzer = FALSE;
+
 	}
+
+	return okAnalyzer;
 
 }
 
@@ -947,6 +974,7 @@ _Bool isSE(int character){
 
 	return FALSE;
 }
+
 
 void freeMemory(){
 
