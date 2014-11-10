@@ -19,6 +19,17 @@ typedef enum {
 	P_P, P_PA, P_PAA, P_R, P_RA, P_S, P_SM, P_VAR, P_VARA
 }SymbolPosition;
 
+
+typedef struct{
+	TokenType type;
+	SymbolPosition position;
+}TokenTypePosition;
+
+/**//TODO
+ * jump a line, so beginnig populate the table from state 0 and go through from o column to 150
+ * feed_line means other line
+ * tab means other column
+ */
 char *table[QTDE_ROWS][QTDE_COLUMNS]; //TODO populate table from file
 char *stack; //TODO
 

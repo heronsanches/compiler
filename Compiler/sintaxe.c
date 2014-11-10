@@ -1,7 +1,7 @@
 #include "sintaxe.h"
 
 TokenTypePosition tokenPositions[] = { //TODO terminate this the same as first position
-		{DOLLAR,P_DOLLAR}, P_PERCENT, P_LEFT_PARENTHESIS, P_RIGHT_PARENTHESIS,
+		{DOLLAR, P_DOLLAR}, P_PERCENT, P_LEFT_PARENTHESIS, P_RIGHT_PARENTHESIS,
 		P_MULTIPLICATION, P_SUM, P_PLUS, P_COMMA, P_MINUS, P_DIVISION,
 		P_LESS, P_EQUAL, P_GREATER, P_AS, P_CTE_CHARACTER, P_CTE_NUM,
 		P_CTE_STRING, P_DECLARE, P_DIFFERENT, P_DO, P_ELSE, P_FOR, P_FOREACH,
@@ -9,6 +9,7 @@ TokenTypePosition tokenPositions[] = { //TODO terminate this the same as first p
 		P_PRINT, P_PUT, P_READ, P_RESIZE, P_THEN, P_TO, P_LEFT_BRACKET,
 		P_RIGHT_BRACKET
 };
+
 
 /* TODO organize this code bellow, it take the productions from file
 FILE *sf; //source file
