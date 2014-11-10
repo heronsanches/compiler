@@ -1,0 +1,67 @@
+s # cmds
+cmds # cmds cmd
+cmds #
+cmd # dec
+cmd # av
+cmd # atr
+cmd # dc
+cmd # for
+cmd # fore
+cmd # r
+cmd # p
+dec # DECLARE li AS ID PONTO
+li # op_li lia
+lia # , op_li lia
+lia #
+op_li # ID op_lia
+op_lia # [ ]
+op_lia #
+av # RESIZE ID TO ea
+ea # ea sm ea2
+ea # ea2
+sm # +
+sm # -
+ea2 # ea2 mdp ea3
+ea2 # ea3
+mdp # *
+mdp # /
+mdp # %
+ea3 # ( ea )
+ea3 # - ea3
+ea3 # var
+var # ID vara
+var # CTE_NUM
+var # CTE_CHAR
+vara # [ ea ]
+vara #
+atr # PUT atra
+atra # ea IN ID atraa
+atra # CTE_STRING IN ID PONTO
+atraa # PONTO
+atraa # [ ea ] PONTO
+er # ea op_r ea
+op_r # <
+op_r # >
+op_r # MEN_I
+op_r # MAI_I
+op_r # =
+op_r # DIF
+dc # IF er THEN [ cmds ] dca
+dca # ELSE [ cmds ]
+dca #
+for # FOR ID fora
+fora # FROM ea TO ea DO [ cmds ]
+fora # [ ea ] FROM ea TO ea DO [ cmds ]
+fore # FOREACH ID forea
+forea # IN ID DO [ cmds ]
+forea # [ ea ] IN ID DO [ cmds ]
+r # READ ID ra
+ra # PONTO
+ra # [ ea ] PONTO
+p # PRINT pa
+pa # ID paa
+pa # CTE_STRING PONTO
+pa # CTE_NUM PONTO
+pa # CTE_CHAR PONTO
+paa # PONTO
+paa # [ ea ] PONTO

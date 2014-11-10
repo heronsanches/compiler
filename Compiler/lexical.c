@@ -39,8 +39,8 @@ TokenType isReseverdWord(char *name){
 	int i;
 	for(i=0; i<QTDE_RESERVED_WORDS; i++){
 
-		if(!strcmp(name, reservedWords[i]->name)) //TODO test this
-			return  reservedWords[i]->type;
+		if(!strcmp(name, reservedWords[i].name)) //TODO test this
+			return  reservedWords[i].type;
 	}
 
 	return NOTHING;
