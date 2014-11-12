@@ -6,7 +6,7 @@
  */
 #include <stdio.h>
 #include "lexical.h"
-
+#include "sintaxe.h"
 
 int main(int argc, char *argv[]){
 
@@ -16,7 +16,7 @@ int main(int argc, char *argv[]){
 	}else{
 
 		if( lAnalyzer(argv[1]) )
-			//TODO sAnalyzer();
+			sAnalyzer();
 
 		freeMemory();
 
