@@ -28,13 +28,14 @@ typedef struct{
 	SymbolPosition position;
 }TokenTypePosition;
 
+
 typedef struct{
 	char* name;
 	SymbolPosition position;
 }NonTerminalPosition;
 
 
-typedef struct{ //TODO change for real use of algorithm
+typedef struct{
 	SymbolPosition lposition; //the location on table of the left side of production
 	int rqtde; //number of elements
 }Production;
@@ -45,15 +46,21 @@ typedef struct{
 }Cell;
 
 
-char *stack; //TODO
+typedef struct StackNode{
+	StackNode *next;
+	StackNode *before;
+	int value;
+}StackNode;
+
+StackNode *stack;
 Production productions[QTDE_PRODUCTIONS];
 
-void push(); //TODO
-void pop(); //TODO
-char* topStack(); //TODO
+void initializeStack();
+void push();
+void pop();
+int topStack();
 void initializeTable();
 void initializeProductions();
-int getQtdeRightSymbols(); //todo
 SymbolPosition getColumnToken(TokenType token);
 _Bool sAnalyzer();//TODO
 

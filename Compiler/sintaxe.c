@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "lexical.h"
 #include "sintaxe.h"
 
 
@@ -209,12 +210,82 @@ void initializeProductions(){
 }
 
 
+void initializeStack(){
+	stack = NULL;
+}
+
+
+int topStack(){
+
+	return stack->value;
+
+}
+
+
+void push(int value){
+
+	StackNode *partial;
+
+	if(stack == NULL){
+
+		stack = (StackNode*)malloc(sizeof(StackNode));
+		stack->before = NULL;
+		stack->next = NULL;
+		stack->value = value;
+
+	}else{
+
+		partial = (StackNode*)malloc(sizeof(StackNode));
+		partial->before = stack;
+		partial->next = NULL;
+		partial->value = value;
+		stack->next = partial;
+		stack = partial;
+
+	}
+
+}
+
+
+void pop(int qtde){
+
+	StackNode *partial;
+
+	int i;
+
+	for(i=0; i<qtde; i++){
+
+		partial = stack;
+		partial->before->next = NULL;
+		stack = partial->before;
+		free(partial);
+
+	}
+
+}
+
 
 _Bool sAnalyzer(){
-	printf("antes table\n");
+
 	initializeTable();
-	printf("table\n");
 	initializeProductions();
-	printf("productions\n");
+	initializeStack();
+
+	//algorithm slr(1)
+	push(0);
+
+	while(1){
+
+		switch( table[topStack()][getColumnToken(getToken())] ){
+			//TODO this switch stored a constant characater,
+			//treat this information for "reduction" or "shift"
+		case :
+
+		break;
+		}
+
+	}
+
+
 	return 1;
 }

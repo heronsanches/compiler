@@ -34,6 +34,11 @@ void initTokens(){
 }
 
 
+TokenType getToken(){ //TODO
+
+}
+
+
 TokenType isReseverdWord(char *name){
 
 	int i;

@@ -84,7 +84,6 @@ _Bool verifyingFile(const char *fileName); //it verifies characters invalids in 
 _Bool lAnalyzer(const char *fileName); //unique DFA
 void freeMemory();
 
-
-
+TokenType getToken(); //TODO
 
 #endif /* LEXICAL_H_ */
