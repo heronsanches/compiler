@@ -201,9 +201,9 @@ void initializeProductions(){
 		}
 
 		fclose(sf);
-		int i;
+		/*int i;
 		for(i=1; i<70; i++)
-			printf("r%d posicaoTable: %d -> qtdElements: %d\n", i, productions[i].lposition, productions[i].rqtde);
+			printf("r%d posicaoTable: %d -> qtdElements: %d\n", i, productions[i].lposition, productions[i].rqtde);*/
 	}else{
 		printf("Falha ao carregar produções, verificar arquivo \"parsetableReductions\"");
 	}
@@ -270,22 +270,86 @@ _Bool sAnalyzer(){
 	initializeTable();
 	initializeProductions();
 	initializeStack();
+	insToken(DOLLAR, "$");
+	actualToken = tokens;
 
 	//algorithm slr(1)
 	push(0);
+	TokenType token = getToken();
+	//printf("token %d, name %s\n", tokens->type, tokens->attribute.name);
+	//printf("actualtoken: %d, name %s\n", actualToken->type, actualToken->attribute.name);
+	char *name = NULL; //stored the content of the table's position
+	int go = -1; //stored the local where I'll go to
 
 	while(1){
 
-		switch( table[topStack()][getColumnToken(getToken())] ){
-			//TODO this switch stored a constant characater,
-			//treat this information for "reduction" or "shift"
-		case :
+		name =  table[topStack()][getColumnToken(token)].contentTable;
+		//printf("%s\n", name); //TODO
+		if(getBeginning(name, &go) == 's'){//shift
 
-		break;
+			push(go);
+			token = getToken();
+
+		}else if(getBeginning(name, &go) == 'r'){ //reduction
+
+			pop(productions[go].rqtde);
+			push(getGoto(table[topStack()][productions[go].lposition].contentTable));
+
+		}else if(name[0] == 'a'){ //accept
+
+			printf("SIM\n");
+			break;
+
+		}else{ //error
+
+			printf("NAO\n");
+			break;
+
 		}
 
 	}
 
-
 	return 1;
+}
+
+
+TokenType getToken(){
+
+	Token *aux = actualToken;
+	actualToken = aux->next;
+
+	//printf("%d %s\n", aux->type);
+	return aux->type;
+
+}
+
+
+int getGoto(char* name){
+
+	int i, j;
+	char *goTemporary = (char*) malloc(strlen(name)+1);
+
+	for(i=0, j=0; i<strlen(name); i++, j++)
+		goTemporary[j] = name[i];
+
+	goTemporary[j] = '\0';
+
+	return atoi(goTemporary);
+
+}
+
+
+char getBeginning(char* name, int* go){
+
+	int i, j;
+	char *goTemporary = (char*) malloc(strlen(name));
+
+	for(i=1, j=0; i<strlen(name); i++, j++)
+		goTemporary[j] = name[i];
+
+	goTemporary[j] = '\0';
+	*go = atoi(goTemporary);
+
+	return name[0];
+
 }

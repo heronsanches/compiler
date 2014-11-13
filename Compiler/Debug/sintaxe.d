@@ -1,5 +1,5 @@
-sintaxe.d: ../sintaxe.c ../sintaxe.h ../lexical.h
-
-../sintaxe.h:
+sintaxe.d: ../sintaxe.c ../lexical.h ../sintaxe.h
 
 ../lexical.h:
+
+../sintaxe.h:

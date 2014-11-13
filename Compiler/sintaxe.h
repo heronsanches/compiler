@@ -47,8 +47,8 @@ typedef struct{
 
 
 typedef struct StackNode{
-	StackNode *next;
-	StackNode *before;
+	struct StackNode *next;
+	struct StackNode *before;
 	int value;
 }StackNode;
 
@@ -62,6 +62,9 @@ int topStack();
 void initializeTable();
 void initializeProductions();
 SymbolPosition getColumnToken(TokenType token);
+char getBeginning(char* name, int* go);
+int getGoto(char* name);
+TokenType getToken();
 _Bool sAnalyzer();//TODO
 
 

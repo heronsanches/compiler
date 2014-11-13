@@ -34,11 +34,6 @@ void initTokens(){
 }
 
 
-TokenType getToken(){ //TODO
-
-}
-
-
 TokenType isReseverdWord(char *name){
 
 	int i;
@@ -52,10 +47,27 @@ TokenType isReseverdWord(char *name){
 }
 
 
+char* convertAllToLower(char *name){
+
+	int i;
+	int size = strlen(name);
+	char* aux = (char*)malloc(size+1);
+
+	for(i=0; i<size; i++)
+		aux[i] = toLowercase((int)name[i]);
+
+	aux[size] = '\0';
+	return aux;
+
+}
+
+
 _Bool insToken(TokenType tokenType, char *tokenName){
 
 	Token *t;
 	TokenType tt;
+
+	tokenName = convertAllToLower(tokenName);
 
 	if( (t = (Token*)malloc(sizeof(Token))) ){
 
@@ -64,18 +76,20 @@ _Bool insToken(TokenType tokenType, char *tokenName){
 			tokens = t;
 			tokens->type = tokenType;
 
-			if(tokenType != CONSTANT_NUMBER && tokenType != NUMBER){
+			if(tokenType != CONSTANT_NUMBER){
 
 				if(tokenType == ID){
 
 					tt = isReseverdWord(tokenName);
 
-					if(tt)
+					if(tt != NOTHING)
 						tokens->type = tt;
 
 				}
 
 				tokens->attribute.name = tokenName;
+
+				//printf("%d %s", tokens->type, tokens->attribute.name);
 
 			}else
 				tokens->attribute.num = atoll(tokenName); //TODO string to long long
@@ -92,23 +106,25 @@ _Bool insToken(TokenType tokenType, char *tokenName){
 			actualToken = t;
 			actualToken->type = tokenType;
 
-			if(tokenType != CONSTANT_NUMBER && tokenType != NUMBER){
+			if(tokenType != CONSTANT_NUMBER){
 
 				if(tokenType == ID){
 
 					tt = isReseverdWord(tokenName);
 
-					if(tt)
-						tokens->type = tt;
+					if(tt != NOTHING)
+						actualToken->type = tt;
 
 				}
 
-				tokens->attribute.name = tokenName;
+				actualToken->attribute.name = tokenName;
 
 			}else
 				actualToken->attribute.num = atoll(tokenName); //TODO string to long long
 
 			actualToken->next = NULL;
+
+			//printf("%s", actualToken->attribute.name);
 
 			return TRUE;
 		}
@@ -179,7 +195,7 @@ TokenType isSeparatorAll(int character){
 
 	TokenType tt;
 
-	if((tt = isSeparatorL(character)))
+	if((tt = isSeparatorL(character)) != NOTHING)
 		return tt;
 	else if(character == LESS)
 		return LESS;
@@ -325,7 +341,7 @@ _Bool lAnalyzer(const char *fileName){
 									tokenReaded[qc] = (char)c;
 									qc++;
 
-								}else if((tt = isSeparatorL(c))){
+								}else if((tt = isSeparatorL(c)) != NOTHING){
 
 									s = S18;
 									tokenReaded[qc] = (char)c;
@@ -386,7 +402,7 @@ _Bool lAnalyzer(const char *fileName){
 								tokenReaded[qc] = (char)c;
 								qc++;
 
-							}else if((tt = isSeparatorL(c))){
+							}else if((tt = isSeparatorL(c)) != NOTHING){
 
 								s = S18;
 								tokenReaded[qc] = (char)c;
@@ -932,8 +948,13 @@ _Bool lAnalyzer(const char *fileName){
 
 					case S18: //accepted , . [ ] + - * / % ( ) = espaco tab quebra_de_linha
 
-						tokenReaded[qc+1] = '\0';
-						insToken(tt, tokenReaded);
+						if(c != 32 && c != 9 && c != 10){
+
+							tokenReaded[qc+1] = '\0';
+							insToken(tt, tokenReaded);
+
+						}
+
 						s = S1;
 
 						if(c == FEED_LINE)
