@@ -23,8 +23,6 @@ TokenType separatorsCharacter[QTDE_SEPARATORS] = {SPACE, TAB, FEED_LINE, COMMA, 
 		AT, CIRCUMFLEX, UNDERLINE, CRASE, RIGHT_KEY, LEFT_KEY, TIO_ACCENT, UP_BAR};*/
 
 
-//TODO struct RelationalOperators
-
 
 void initTokens(){
 

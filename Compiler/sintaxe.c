@@ -29,11 +29,11 @@ NonTerminalPosition nonTerminalPositions[] ={
 		{"atra", P_ATRA}, {"atraa", P_ATRAA}, {"er", P_ER}, {"op_r", P_OP_R},
 		{"dc", P_DC}, {"dca", P_DCA}, {"for", P_FOR_NT}, {"fora", P_FORA_NT},
 		{"fore", P_FORE_NT}, {"forea", P_FOREA_NT}, {"ra", P_RA},
-		{"pa", P_PA},	{"paa", P_PAA}
+		{"pa", P_PA},	{"paa", P_PAA}, {"ea3a", P_EA3A}, {"rb", P_RB}
 };
 
 
-Cell table[153][72];
+Cell table[QTDE_ROWS][QTDE_COLUMNS];
 
 
 SymbolPosition getColumnToken(TokenType token){
@@ -82,7 +82,7 @@ void initializeTable(){
 	 * feed_line means other line
 	 * tab means other column
 	 */
-	if( (sf = fopen("parseTable.arq", "r")) != NULL ){
+	if( (sf = fopen("parseTable2.arq", "r")) != NULL ){
 		tokenReaded = (char*)malloc(4);
 		while(go){
 
@@ -122,9 +122,6 @@ void initializeTable(){
 
 		fclose(sf);
 
-		//printf("imprimiuuu%s", table[139][34].contentTable);
-
-
 	}else{
 		printf("file not opened");
 	}
@@ -143,9 +140,9 @@ void initializeProductions(){
 	_Bool l = 1;
 
 	productions[0].lposition = P_NOTHING;
-	productions[0].rqtde = NOTHING;
+	productions[0].rqtde = P_NOTHING;
 
-	if( (sf = fopen("parseTableReductions.arq", "r")) != NULL ){
+	if( (sf = fopen("parseTableReductions2.arq", "r")) != NULL ){
 
 		tokenReaded = (char*)malloc(10);
 
@@ -202,7 +199,7 @@ void initializeProductions(){
 
 		fclose(sf);
 		/*int i;
-		for(i=1; i<70; i++)
+		for(i=1; i<=QTDE_PRODUCTIONS; i++)
 			printf("r%d posicaoTable: %d -> qtdElements: %d\n", i, productions[i].lposition, productions[i].rqtde);*/
 	}else{
 		printf("Falha ao carregar produções, verificar arquivo \"parsetableReductions\"");
@@ -280,11 +277,12 @@ _Bool sAnalyzer(){
 	//printf("actualtoken: %d, name %s\n", actualToken->type, actualToken->attribute.name);
 	char *name = NULL; //stored the content of the table's position
 	int go = -1; //stored the local where I'll go to
-
+	//printf("table&%s&fim\n",table[158][getColumnToken(DOLLAR)].contentTable);
+	//printf("%d", getColumnToken(36));
 	while(1){
 
 		name =  table[topStack()][getColumnToken(token)].contentTable;
-		//printf("%s\n", name); //TODO
+		//printf("state %d	token %d	make %s\n", topStack(), token, name); //TODO
 		if(getBeginning(name, &go) == 's'){//shift
 
 			push(go);
@@ -318,7 +316,7 @@ TokenType getToken(){
 	Token *aux = actualToken;
 	actualToken = aux->next;
 
-	//printf("%d %s\n", aux->type);
+	printf("%d\n", aux->type);
 	return aux->type;
 
 }
@@ -334,21 +332,25 @@ int getGoto(char* name){
 
 	goTemporary[j] = '\0';
 
-	return atoi(goTemporary);
+	return atoi(goTemporary); //verificar se esta tentando transformar vazio
 
 }
 
 
 char getBeginning(char* name, int* go){
 
-	int i, j;
-	char *goTemporary = (char*) malloc(strlen(name));
+	if(name[0] != ' '){
 
-	for(i=1, j=0; i<strlen(name); i++, j++)
-		goTemporary[j] = name[i];
+		int i, j;
+		char *goTemporary = (char*) malloc(strlen(name));
 
-	goTemporary[j] = '\0';
-	*go = atoi(goTemporary);
+		for(i=1, j=0; i<strlen(name); i++, j++)
+			goTemporary[j] = name[i];
+
+		goTemporary[j] = '\0';
+		*go = atoi(goTemporary);
+
+	}
 
 	return name[0];
 
