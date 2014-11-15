@@ -23,13 +23,13 @@ NonTerminalPosition nonTerminalPositions[] ={
 		{"av", P_AV}, {"atr", P_ATR}, {"dc", P_DC},
 		{"for", P_FOR_NT}, {"fore", P_FORE_NT}, {"r", P_R},
 		{"p", P_P}, {"s", P_S}, {"tip", P_TIP}, {"li", P_LI},
-		{"lia", P_LIA},	{"op_li", P_OP_LI}, {"op_lia", P_OP_LIA},
+		{"lia", P_LIA}, {"liaa", P_LIAA},
 		{"ea", P_EA}, {"sm", P_SM},	{"ea2", P_EA2}, {"mdp", P_MDP},
 		{"ea3", P_EA3}, {"var", P_VAR},	{"vara", P_VARA}, {"atr", P_ATR},
 		{"atra", P_ATRA}, {"atraa", P_ATRAA}, {"er", P_ER}, {"op_r", P_OP_R},
 		{"dc", P_DC}, {"dca", P_DCA}, {"for", P_FOR_NT}, {"fora", P_FORA_NT},
 		{"fore", P_FORE_NT}, {"forea", P_FOREA_NT}, {"ra", P_RA},
-		{"pa", P_PA},	{"paa", P_PAA}, {"ea3a", P_EA3A}, {"rb", P_RB}
+		{"pa", P_PA},	{"paa", P_PAA}, {"ea3a", P_EA3A}
 };
 
 
@@ -82,7 +82,7 @@ void initializeTable(){
 	 * feed_line means other line
 	 * tab means other column
 	 */
-	if( (sf = fopen("parseTable2.arq", "r")) != NULL ){
+	if( (sf = fopen("parseTable3.arq", "r")) != NULL ){
 		tokenReaded = (char*)malloc(4);
 		while(go){
 
@@ -142,7 +142,7 @@ void initializeProductions(){
 	productions[0].lposition = P_NOTHING;
 	productions[0].rqtde = P_NOTHING;
 
-	if( (sf = fopen("parseTableReductions2.arq", "r")) != NULL ){
+	if( (sf = fopen("parseTableReductions3.arq", "r")) != NULL ){
 
 		tokenReaded = (char*)malloc(10);
 
@@ -273,16 +273,13 @@ _Bool sAnalyzer(){
 	//algorithm slr(1)
 	push(0);
 	TokenType token = getToken();
-	//printf("token %d, name %s\n", tokens->type, tokens->attribute.name);
-	//printf("actualtoken: %d, name %s\n", actualToken->type, actualToken->attribute.name);
 	char *name = NULL; //stored the content of the table's position
 	int go = -1; //stored the local where I'll go to
-	//printf("table&%s&fim\n",table[158][getColumnToken(DOLLAR)].contentTable);
-	//printf("%d", getColumnToken(36));
+
 	while(1){
 
 		name =  table[topStack()][getColumnToken(token)].contentTable;
-		//printf("state %d	token %d	make %s\n", topStack(), token, name); //TODO
+
 		if(getBeginning(name, &go) == 's'){//shift
 
 			push(go);
@@ -316,7 +313,6 @@ TokenType getToken(){
 	Token *aux = actualToken;
 	actualToken = aux->next;
 
-	printf("%d\n", aux->type);
 	return aux->type;
 
 }

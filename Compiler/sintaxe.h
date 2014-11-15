@@ -3,9 +3,9 @@
 
 #include "lexical.h"
 
-#define QTDE_COLUMNS 74
-#define QTDE_ROWS 159
-#define QTDE_PRODUCTIONS 72 //but in real this beginning from 1 to 72
+#define QTDE_COLUMNS 72
+#define QTDE_ROWS 160
+#define QTDE_PRODUCTIONS 71 //but in real this beginning from 1 to 71
 
 /** column positions of terminals and non-terminals */
 typedef enum {
@@ -17,8 +17,8 @@ typedef enum {
 	P_DOT, P_PRINT, P_PUT, P_READ, P_RESIZE, P_THEN, P_TO, P_LEFT_BRACKET,
 	P_RIGHT_BRACKET, P_ATR, P_ATRA, P_ATRAA, P_AV, P_CMD, P_CMDS, P_DC,
 	P_DCA, P_DEC, P_EA, P_EA2, P_EA3, P_EA3A, P_ER, P_FOR_NT, P_FORA_NT,
-	P_FORE_NT, P_FOREA_NT, P_LI, P_LIA, P_MDP, P_OP_LI, P_OP_LIA, P_OP_R,
-	P_P, P_PA, P_PAA, P_R, P_RA, P_RB, P_S, P_SM, P_TIP, P_VAR, P_VARA, P_NOTHING=-1
+	P_FORE_NT, P_FOREA_NT, P_LI, P_LIA, P_LIAA, P_MDP, P_OP_R,
+	P_P, P_PA, P_PAA, P_R, P_RA, P_S, P_SM, P_TIP, P_VAR, P_VARA, P_NOTHING=-1
 }SymbolPosition;
 
 
@@ -64,7 +64,7 @@ SymbolPosition getColumnToken(TokenType token);
 char getBeginning(char* name, int* go);
 int getGoto(char* name);
 TokenType getToken();
-_Bool sAnalyzer();//TODO
+_Bool sAnalyzer();
 
 
 
