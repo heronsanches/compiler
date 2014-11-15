@@ -10,59 +10,63 @@ r8 #CMD -> #FOR
 r9 #CMD -> #FORE
 r10 #CMD -> #R
 r11 #CMD -> #P
-r12 #DEC -> declare #LI as id .
-r13 #LI -> #OP_LI #LI'
-r14 #LI' -> , #OP_LI #LI'
-r15 #LI' -> &
-r16 #OP_LI -> id #OP_LI'
-r17 #OP_LI' -> [ ]
-r18 #OP_LI' -> &
-r19 #AV -> resize id to #EA
-r20 #EA -> #EA #SM #EA2
-r21 #EA -> #EA2
-r22 #SM -> +
-r23 #SM -> -
-r24 #EA2 -> #EA2 #MDP #EA3
-r25 #EA2 -> #EA3
-r26 #MDP -> *
-r27 #MDP -> /
-r28 #MDP -> %
-r29 #EA3 -> ( #EA )
-r30 #EA3 -> #VAR
-r31 #EA3 -> - #EA3
-r32 #VAR -> id VAR'
-r33 #VAR' -> [ #EA ]
-r34 #VAR' -> &
-r35 #VAR -> cte_num
-r36 #VAR -> cte_char
-r37 #ATR -> put #ATR'	
-r38 #ATR' -> #EA in id #ATR''
-r39 #ATR' -> cte_str in id .
-r40 #ATR'' -> .
-r41 #ATR'' -> [ #EA ] .
-r42 #ER -> #EA #OP_R #EA
-r43 #OP_R -> < 
-r44 #OP_R -> >
-r45 #OP_R -> <=
-r46 #OP_R -> >=
-r47 #OP_R -> =
-r48 #OP_R -> <>
-r49 #DC -> if #ER then [ #CMDS ] #DC'
-r50 #DC' -> else [ #CMDS ]
-r51 #DC' -> &
-r52 #FOR -> for id #FOR'
-r53 #FOR' -> from #EA to #EA do [ #CMDS ]
-r54 #FOR' -> [ #EA ] from #EA to #EA do [ #CMDS ]
-r55 #FORE -> foreach id #FORE'
-r56 #FORE' -> in id do [ #CMDS ]
-r57 #FORE' -> [ #EA ] in id do [ #CMDS ]
-r58 #R -> read id #R'
-r59 #R' -> .
-r60 #R' -> [ #EA ] .
-r61 #P -> print #P'
-r62 #P' -> id #P''
-r63 #P' -> string .
-r64 #P' -> cte_num .
-r65 #P' -> cte_char .
-r66 #P'' -> .
-r67 #P'' -> [ #EA ] .
+r12 #DEC -> declare #LI as #TIP
+r13 #TIP -> number . 
+r14 #TIP -> letter .
+r15 #LI -> id #LIA
+r16 #LIA -> , #LI
+r17 #LIA -> [ ] #LIAA
+r18 #LIA -> &
+r19 #LIAA -> , #LI
+r20 #LIAA -> &
+r21 #AV -> resize id to #EA .
+r22 #EA -> #EA #SM #EA2
+r23 #EA -> #EA2
+r24 #SM -> +
+r25 #SM -> -
+r26 #EA2 -> #EA2 #MDP #EA3
+r27 #EA2 -> #EA3
+r28 #MDP -> *
+r29 #MDP -> /
+r30 #MDP -> %
+r31 #EA3 -> ( #EA )
+r32 #EA3 -> - #EA3A
+r33 #EA3 -> #VAR
+r34 #EA3A -> ( #EA )
+r35 #EA3A -> #VAR
+r36 #VAR -> id #VARA
+r37 #VAR -> cte_num
+r38 #VAR -> cte_char
+r39 #VARA -> [ #EA ]
+r40 #VARA -> & 
+r41 #ATR -> put #ATR'	
+r42 #ATR' -> #EA in id #ATR''
+r43 #ATR' -> cte_str in id .
+r44 #ATR'' -> .
+r45 #ATR'' -> [ #EA ] .
+r46 #ER -> #EA #OP_R #EA
+r47 #OP_R -> < 
+r48 #OP_R -> >
+r49 #OP_R -> <=
+r50 #OP_R -> >=
+r51 #OP_R -> =
+r52 #OP_R -> <>
+r53 #DC -> if #ER then [ #CMDS ] #DC'
+r54 #DC' -> else [ #CMDS ]
+r55 #DC' -> &
+r56 #FOR -> for id #FOR'
+r57 #FOR' -> from #EA to #EA do [ #CMDS ]
+r58 #FOR' -> [ #EA ] from #EA to #EA do [ #CMDS ]
+r59 #FORE -> foreach id #FORE'
+r60 #FORE' -> in id do [ #CMDS ]
+r61 #FORE' -> [ #EA ] in id do [ #CMDS ]
+r62 #R -> read id #R'
+r63 #R' -> .
+r64 #R' -> [ #EA ] .
+r65 #P -> print #P'
+r66 #P' -> id #P''
+r67 #P' -> cte_str .
+r68 #P' -> cte_num .
+r69 #P' -> cte_char .
+r70 #P'' -> .
+r71 #P'' -> [ #EA ] .
